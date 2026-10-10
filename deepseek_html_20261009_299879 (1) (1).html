@@ -1,0 +1,3016 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Studio</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{background:#fff;color:#111}
+body{font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',Helvetica,Arial,sans-serif;background:#fff;color:#111;min-height:100vh;padding:1.5rem 1.25rem 300px;font-size:15px;line-height:1.55;max-width:1600px;margin:0 auto;letter-spacing:-0.005em;-webkit-font-smoothing:antialiased}
+header{padding-bottom:1rem;border-bottom:1px solid #111;margin-bottom:1.2rem;display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;flex-wrap:wrap}
+header .brand h1{font-size:1.5rem;font-weight:600;letter-spacing:-0.02em;margin-bottom:.15rem}
+header .brand p{font-size:.72rem;color:#666;text-transform:uppercase;letter-spacing:.15em;font-weight:500}
+header .head-status{display:flex;gap:.35rem;flex-wrap:wrap;align-items:center;padding-top:.35rem}
+.head-pill{font-size:.66rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;padding:.28rem .55rem;border:1px solid #ccc;border-radius:100px;background:#fff;color:#999;display:inline-flex;align-items:center;gap:.3rem}
+.head-pill::before{content:'';width:6px;height:6px;border-radius:50%;background:#ccc;display:inline-block}
+.head-pill.on{border-color:#111;color:#111}
+.head-pill.on::before{background:#111}
+.head-pill.gold{border-color:#d4a017;color:#b8860b}
+.head-pill.gold.on{background:#fffbe6}
+.head-pill.gold.on::before{background:#d4a017}
+
+/* MAIN TABS */
+.main-tabs{display:flex;gap:.3rem;margin-bottom:1rem;flex-wrap:wrap;border-bottom:1px solid #ddd;padding-bottom:0}
+.main-tab{padding:.7rem 1.1rem;background:transparent;border:none;border-bottom:2px solid transparent;color:#666;font-family:inherit;font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;cursor:pointer;transition:all .15s;margin-bottom:-1px}
+.main-tab:hover{color:#111}
+.main-tab.active{color:#111;border-bottom-color:#111}
+
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+
+.session-bar{background:#fafafa;border:1px solid #ddd;border-radius:8px;padding:.6rem .9rem;margin-bottom:1rem;display:flex;gap:.5rem;flex-wrap:wrap;align-items:center}
+.session-bar .sb-label{font-size:.68rem;color:#111;font-weight:700;text-transform:uppercase;letter-spacing:.1em}
+.session-bar select{flex:1;min-width:200px;padding:.5rem .75rem;border:1px solid #111;border-radius:6px;background:#fff;color:#111;font-family:inherit;font-size:.8rem;cursor:pointer}
+.session-bar button{padding:.5rem .8rem;border:1px solid #111;background:#fff;color:#111;border-radius:6px;font-family:inherit;font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;cursor:pointer;transition:all .15s}
+.session-bar button:hover{background:#111;color:#fff}
+.session-bar button.danger{border-color:#c00;color:#c00}
+.session-bar button.danger:hover{background:#c00;color:#fff}
+
+.section{background:#fff;border:1px solid #ddd;border-radius:8px;margin-bottom:.85rem;overflow:hidden}
+.section:hover{border-color:#999}
+.section-header{padding:.85rem 1.15rem;cursor:pointer;user-select:none;display:flex;justify-content:space-between;align-items:center;gap:.5rem}
+.section-header:active{background:#fafafa}
+.section-title{font-size:.7rem;text-transform:uppercase;letter-spacing:.18em;font-weight:700;color:#111;display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
+.section-title .num{display:inline-flex;width:20px;height:20px;align-items:center;justify-content:center;background:#111;color:#fff;border-radius:50%;font-size:.6rem;font-weight:700}
+.section-title .badge{font-size:.58rem;padding:.1rem .4rem;border:1px solid #111;border-radius:100px;letter-spacing:.05em;font-weight:600;text-transform:uppercase}
+.section-title .badge.gray{border-color:#ccc;color:#888}
+.section-title .badge.gold{border-color:#d4a017;color:#b8860b;background:#fffbe6}
+.section-title .badge.red{border-color:#c00;color:#c00;background:#fff5f5}
+.chevron{font-size:.85rem;color:#666;transition:transform .25s;line-height:1}
+.section.open .chevron{transform:rotate(180deg);color:#111}
+.section-body{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.section.open .section-body{max-height:120000px}
+.section-content{padding:0 1.15rem 1.1rem}
+
+.input-row{width:100%;padding:.8rem .95rem;border:1px solid #ddd;border-radius:6px;background:#fff;color:#111;font-family:inherit;font-size:.88rem;outline:none;transition:border-color .15s;margin-bottom:.5rem}
+.input-row:focus{border-color:#111}
+textarea.input-row{font-family:ui-monospace,'SF Mono',Menlo,monospace;font-size:.74rem;line-height:1.55;min-height:100px;resize:vertical}
+.input-hint{font-size:.7rem;color:#666;line-height:1.5;margin-top:.35rem}
+.input-hint code{background:#f3f3f3;padding:.08rem .35rem;border-radius:3px;font-family:ui-monospace,monospace;font-size:.66rem;color:#111}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;padding:.8rem 1.1rem;border:1px solid #111;border-radius:6px;background:#111;color:#fff;font-size:.78rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;cursor:pointer;font-family:inherit;transition:opacity .15s,transform .1s;width:100%;margin-bottom:.5rem;line-height:1}
+.btn:hover:not(:disabled){opacity:.85}
+.btn:active:not(:disabled){transform:scale(.985)}
+.btn:disabled{opacity:.28;cursor:not-allowed}
+.btn.secondary{background:#fff;color:#111;border-color:#111}
+.btn.ghost{background:#fff;color:#666;border-color:#ddd}
+.btn.ghost:hover:not(:disabled){color:#111;border-color:#111}
+.btn.gold{background:#fff;color:#b8860b;border-color:#d4a017}
+.btn.gold:hover:not(:disabled){background:#fffbe6}
+.btn.danger{background:#fff;color:#c00;border-color:#c00}
+.btn.danger:hover:not(:disabled){background:#c00;color:#fff}
+.btn.large{padding:1rem 1.4rem;font-size:.9rem}
+.btn.small{padding:.5rem .8rem;font-size:.68rem;width:auto}
+
+.status{display:flex;align-items:center;gap:.5rem;font-size:.72rem;padding:.55rem .8rem;border:1px solid #ddd;border-radius:6px;background:#fafafa;color:#666;margin-bottom:.5rem}
+.status .dot{width:7px;height:7px;border-radius:50%;background:#ccc;flex-shrink:0}
+.status.ok{border-color:#111;color:#111;background:#f5f5f5}
+.status.ok .dot{background:#111}
+.status.err{border-color:#c00;color:#c00;background:#fff5f5}
+.status.err .dot{background:#c00}
+
+.ref-drop{border:2px dashed #ccc;border-radius:8px;padding:1.4rem 1rem;text-align:center;cursor:pointer;transition:all .2s;background:#fafafa;position:relative;display:block}
+.ref-drop:hover{border-color:#111;background:#fff}
+.ref-drop.has-image{padding:0;border-style:solid;border-color:#111}
+.ref-drop input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer}
+.ref-drop .ref-icon{font-size:1.6rem;color:#111;opacity:.35;margin-bottom:.35rem}
+.ref-drop .ref-text{font-size:.8rem;color:#666;line-height:1.5}
+.ref-drop .ref-text strong{color:#111;font-weight:600;display:block;margin-bottom:.15rem}
+.ref-preview{display:block;width:100%;max-height:340px;overflow:hidden;position:relative}
+.ref-preview img{width:100%;height:auto;max-height:340px;object-fit:contain;display:block;background:#f5f5f5}
+.ref-preview .ref-remove{position:absolute;top:.5rem;right:.5rem;width:30px;height:30px;border-radius:50%;background:#111;color:#fff;border:none;font-size:.9rem;cursor:pointer;display:flex;align-items:center;justify-content:center}
+
+.bottom-dock{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #111;z-index:900}
+.progress-strip{height:4px;background:#eee;position:relative;overflow:hidden}
+.progress-fill{height:100%;background:#111;width:0%;transition:width .3s ease}
+.progress-meta{display:none;justify-content:space-between;align-items:center;gap:.5rem;padding:.3rem .9rem;font-size:.66rem;font-family:ui-monospace,monospace;color:#666;background:#fafafa;border-bottom:1px solid #eee}
+.progress-meta.visible{display:flex}
+.progress-meta .lbl{color:#111;font-weight:600}
+.console-dock{border-top:1px solid #eee;display:flex;flex-direction:column;height:180px;transition:height .3s ease;background:#fff}
+.console-dock.collapsed{height:36px}
+.console-header{display:flex;align-items:center;gap:.5rem;padding:.5rem .85rem;background:#fafafa;border-bottom:1px solid #eee;cursor:pointer;user-select:none;min-height:36px}
+.console-title{font-size:.62rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:#111}
+.console-badge{font-size:.58rem;padding:.08rem .35rem;background:#111;color:#fff;border-radius:100px;font-weight:700}
+.console-actions{margin-left:auto;display:flex;gap:.25rem}
+.console-actions button{background:#fff;border:1px solid #ddd;color:#666;font-size:.58rem;padding:.22rem .5rem;border-radius:3px;cursor:pointer;font-family:inherit;letter-spacing:.04em;text-transform:uppercase}
+.console-toggle{background:transparent;border:none;cursor:pointer;color:#111;font-size:.75rem;padding:.2rem .4rem;font-family:inherit}
+.console-body{flex:1;overflow-y:auto;padding:.45rem .85rem .8rem;font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace;font-size:.68rem;line-height:1.5;color:#333;background:#fff}
+.log-entry{padding:.15rem 0;border-bottom:1px solid #f3f3f3;word-break:break-word;display:flex;gap:.45rem}
+.log-time{color:#999;font-size:.6rem;flex-shrink:0;min-width:56px}
+.log-cat{color:#111;font-weight:700;font-size:.6rem;flex-shrink:0;min-width:66px}
+.log-msg{color:#333;flex:1}
+.log-entry.success .log-msg{color:#0a7a3e}
+.log-entry.warn .log-msg{color:#b8860b}
+.log-entry.error .log-msg{color:#c00}
+.log-entry.api .log-cat{color:#0045b5}
+.log-entry.ai .log-cat{color:#5e2ca5}
+
+.toast{position:fixed;top:1rem;left:50%;transform:translateX(-50%) translateY(-140px);background:#111;color:#fff;padding:.7rem 1.15rem;border-radius:6px;font-size:.8rem;font-weight:500;z-index:1100;opacity:0;transition:transform .3s,opacity .3s;max-width:90vw;text-align:center;box-shadow:0 8px 24px rgba(0,0,0,.15)}
+.toast.visible{transform:translateX(-50%) translateY(0);opacity:1}
+.toast.error{background:#c00}
+.toast.warn{background:#b8860b}
+.toast.gold{background:#d4a017}
+
+.gen-bar{display:flex;flex-direction:column;gap:.5rem;margin-top:1rem;padding:.85rem;border:1px dashed #ccc;border-radius:8px;background:#fafafa}
+.gen-bar .row1{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center}
+.gen-bar .lbl{font-size:.68rem;color:#111;font-weight:700;text-transform:uppercase;letter-spacing:.1em;flex-shrink:0}
+.gen-bar select{flex:1;min-width:280px;padding:.6rem .8rem;border:1px solid #111;border-radius:6px;background:#fff;color:#111;font-family:inherit;font-size:.78rem;cursor:pointer}
+.gen-bar input.smart-input{flex:2;min-width:260px;padding:.6rem .8rem;border:1px solid #111;border-radius:6px;background:#fff;color:#111;font-family:inherit;font-size:.78rem}
+.gen-bar .btn{width:auto;flex:0 0 auto;margin:0}
+.gen-bar .info{font-size:.66rem;color:#666;line-height:1.5}
+
+.image-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:.85rem;margin-top:.75rem}
+@media(max-width:700px){.image-grid{grid-template-columns:1fr 1fr;gap:.45rem}}
+.image-card{border:1px solid #ddd;border-radius:8px;overflow:hidden;background:#fff;transition:border-color .15s;display:flex;flex-direction:column;position:relative}
+.image-card:hover{border-color:#111}
+.image-card.saved-as-style{border-color:#d4a017;box-shadow:0 0 0 1px #d4a017}
+.image-card.selected-for-film{border-color:#0045b5;box-shadow:0 0 0 2px #0045b5}
+.image-card.loading{background:linear-gradient(90deg,#f5f5f5 0%,#eee 50%,#f5f5f5 100%);background-size:200% 100%;animation:shimmer 1.8s infinite;min-height:230px}
+.image-card.error{border-color:#c00;background:#fff5f5}
+.image-card .thumb{position:relative;aspect-ratio:1/1;overflow:hidden;background:#f5f5f5}
+.image-card .thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.image-card .thumb .placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#999;font-size:.7rem;font-family:ui-monospace,monospace;padding:.5rem;text-align:center;line-height:1.4}
+.image-card .thumb .placeholder.err{color:#c00}
+.image-card .thumb .kind-badge{position:absolute;top:.35rem;right:.35rem;font-size:.52rem;padding:.12rem .38rem;background:#111;color:#fff;border-radius:100px;letter-spacing:.06em;font-weight:700;text-transform:uppercase;z-index:2}
+.image-card .thumb .kind-badge.complementary{background:#fff;color:#111;border:1px solid #111}
+.image-card .thumb .kind-badge.extended{background:#5e2ca5;color:#fff}
+.image-card .thumb .kind-badge.plan{background:#0045b5;color:#fff}
+.image-card .thumb .kind-badge.reconstruct{background:#c05a00;color:#fff}
+.image-card .thumb .kind-badge.variant{background:#0a7a3e;color:#fff}
+.image-card .thumb .star-badge{position:absolute;bottom:.35rem;right:.35rem;font-size:.9rem;color:#d4a017;text-shadow:0 1px 2px rgba(0,0,0,.6);z-index:2}
+.image-card .check{position:absolute;top:.35rem;left:.35rem;width:24px;height:24px;background:#fff;border:2px solid #111;border-radius:5px;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:3}
+.image-card .check.on{background:#0045b5;border-color:#0045b5;color:#fff}
+.image-card .check svg{width:13px;height:13px;display:block;opacity:0}
+.image-card .check.on svg{opacity:1}
+.image-card .cap{padding:.45rem .65rem;font-size:.7rem;font-weight:600;color:#111;border-top:1px solid #eee;display:flex;justify-content:space-between;align-items:center;gap:.4rem;background:#fafafa}
+.image-card .cap .cap-lbl{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0}
+.image-card .cap .cap-key{font-family:ui-monospace,monospace;font-size:.58rem;color:#999;flex-shrink:0}
+.image-card .acts{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;border-top:1px solid #eee;background:#fff}
+.image-card .acts button{padding:.45rem .15rem;background:transparent;border:none;color:#666;cursor:pointer;font-family:inherit;font-size:.58rem;font-weight:600;text-transform:uppercase;transition:all .15s;display:flex;align-items:center;justify-content:center}
+.image-card .acts button:not(:last-child){border-right:1px solid #eee}
+.image-card .acts button:hover:not(:disabled){background:#111;color:#fff}
+.image-card .acts button:disabled{opacity:.3;cursor:not-allowed}
+.image-card .acts button.star-btn:hover{background:#d4a017;color:#fff}
+.image-card .acts button.star-btn.on{color:#d4a017}
+
+.variants-row{grid-column:1/-1;background:#f0f9f3;border:2px dashed #0a7a3e;border-radius:10px;padding:.85rem;margin:-.15rem 0 .3rem 0}
+.variants-row .vr-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:.6rem;gap:.5rem;flex-wrap:wrap}
+.variants-row .vr-title .vr-lbl{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#0a7a3e}
+.variants-row .vr-title .vr-source{font-size:.62rem;color:#666;font-style:italic;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:50%;text-align:right}
+.variants-row .vr-actions{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.6rem}
+.variants-row .vr-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:.55rem}
+.vr-card{background:#fff;border:1px solid #0a7a3e;border-radius:6px;overflow:hidden;position:relative}
+.vr-card.loading{background:linear-gradient(90deg,#f5f5f5 0%,#e0f2e8 50%,#f5f5f5 100%);background-size:200% 100%;animation:shimmer 1.8s infinite;aspect-ratio:1/1}
+.vr-card.error{border-color:#c00;background:#fff5f5}
+.vr-card .thumb{position:relative;aspect-ratio:1/1;overflow:hidden;background:#f5f5f5}
+.vr-card .thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.vr-card .thumb .vr-ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#999;font-size:.65rem;font-family:ui-monospace,monospace;padding:.4rem;text-align:center}
+.vr-card .thumb .vr-ph.err{color:#c00}
+.vr-card .thumb .star-badge{position:absolute;bottom:.3rem;right:.3rem;font-size:.85rem;color:#d4a017;text-shadow:0 1px 2px rgba(0,0,0,.6)}
+.vr-card .cap{padding:.32rem .45rem;font-size:.62rem;font-weight:600;color:#0a7a3e;background:#f0f9f3;border-top:1px solid #0a7a3e;text-transform:uppercase;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.vr-card .vr-acts{display:grid;grid-template-columns:1fr 1fr 1fr;border-top:1px solid #0a7a3e;background:#fff}
+.vr-card .vr-acts button{padding:.32rem .1rem;background:transparent;border:none;color:#666;cursor:pointer;font-family:inherit;font-size:.55rem;font-weight:600;transition:all .15s}
+.vr-card .vr-acts button:not(:last-child){border-right:1px solid #0a7a3e}
+.vr-card .vr-acts button:hover:not(:disabled){background:#0a7a3e;color:#fff}
+.vr-card .vr-acts button:disabled{opacity:.3;cursor:not-allowed}
+
+.saved-styles-empty{padding:1.1rem 1rem;text-align:center;color:#999;font-size:.76rem;border:1px dashed #ddd;border-radius:6px;font-family:ui-monospace,monospace}
+.saved-styles-empty .big{font-size:1.4rem;display:block;margin-bottom:.3rem;opacity:.4}
+.saved-styles-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:.55rem;margin-bottom:.7rem;max-height:520px;overflow-y:auto;padding:.15rem}
+.saved-style-card{background:#fffbe6;border:1px solid #d4a017;border-radius:6px;padding:.6rem .7rem;display:flex;flex-direction:column;gap:.35rem;transition:box-shadow .15s}
+.saved-style-card.selected{box-shadow:0 0 0 2px #d4a017;background:#fff9d6}
+.saved-style-card .ss-head{display:flex;justify-content:space-between;align-items:flex-start;gap:.4rem}
+.saved-style-card .ss-label{font-size:.76rem;font-weight:700;color:#111;flex:1;word-break:break-word;line-height:1.3}
+.saved-style-card .ss-cat{font-size:.58rem;color:#b8860b;text-transform:uppercase;letter-spacing:.05em;font-weight:600;margin-top:.1rem}
+.saved-style-card .ss-toggle{width:22px;height:22px;border:2px solid #d4a017;border-radius:4px;background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.saved-style-card .ss-toggle.on{background:#d4a017}
+.saved-style-card .ss-toggle.on::after{content:'✓';color:#fff;font-size:.7rem;font-weight:700}
+.saved-style-card .ss-prompt{font-size:.6rem;color:#666;font-family:ui-monospace,monospace;line-height:1.4;max-height:48px;overflow:hidden;word-break:break-word}
+.saved-style-card .ss-actions{display:flex;gap:.3rem;margin-top:auto}
+.saved-style-card .ss-actions button{flex:1;padding:.28rem .4rem;background:transparent;border:1px solid #d4a017;color:#b8860b;border-radius:4px;font-family:inherit;font-size:.58rem;font-weight:600;text-transform:uppercase;cursor:pointer;transition:all .15s}
+.saved-style-card .ss-actions button:hover{background:#d4a017;color:#fff}
+
+.film-thumbs{display:flex;gap:.45rem;flex-wrap:wrap;margin-top:.6rem;margin-bottom:.6rem}
+.film-thumb{position:relative;width:72px;height:72px;border-radius:6px;overflow:hidden;border:1px solid #ddd;background:#fafafa}
+.film-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.film-thumb .rm{position:absolute;top:2px;right:2px;width:18px;height:18px;background:#111;color:#fff;border-radius:50%;border:none;font-size:.65rem;cursor:pointer;padding:0}
+.film-videos{display:flex;flex-direction:column;gap:.6rem;margin-top:.6rem}
+.film-video-item{border:1px solid #111;border-radius:8px;overflow:hidden;background:#fafafa}
+.film-video-item .fv-head{padding:.45rem .75rem;border-bottom:1px solid #eee;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em}
+.film-video-item .fv-body{padding:.6rem;display:grid;grid-template-columns:1fr 2fr;gap:.6rem}
+@media(max-width:600px){.film-video-item .fv-body{grid-template-columns:1fr}}
+.film-video-item .fv-video{aspect-ratio:9/16;background:#000;border-radius:6px;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.film-video-item .fv-video video{width:100%;height:100%;object-fit:contain;display:block}
+.film-video-item .fv-video .fv-load{color:#fff;font-family:ui-monospace,monospace;font-size:.66rem;text-align:center;padding:.9rem;line-height:1.5}
+.film-video-item .fv-text{font-size:.75rem;line-height:1.5}
+.film-video-item .fv-dialogue{font-style:italic;color:#0045b5;margin-top:.35rem}
+.film-video-item .fv-meta{font-size:.62rem;color:#999;margin-top:.25rem;font-family:ui-monospace,monospace}
+
+.video-lib-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:.65rem}
+.video-lib-card{border:1px solid #ddd;border-radius:8px;overflow:hidden;background:#fafafa;transition:border-color .15s}
+.video-lib-card:hover{border-color:#111}
+.video-lib-card.pending{border-color:#d4a017;background:#fffbe6}
+.video-lib-card video{width:100%;display:block;background:#000;aspect-ratio:9/16;object-fit:contain}
+.video-lib-card .vlb-cap{padding:.45rem .65rem;font-size:.68rem;border-top:1px solid #eee}
+.video-lib-card .vlb-cap .vlb-t{font-weight:700;color:#111;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.video-lib-card .vlb-cap .vlb-s{font-size:.6rem;color:#666;margin-top:.15rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.video-lib-card .vlb-actions{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid #eee;background:#fff}
+.video-lib-card .vlb-actions button{padding:.35rem;background:transparent;border:none;color:#666;cursor:pointer;font-family:inherit;font-size:.6rem;font-weight:600;text-transform:uppercase;transition:all .15s}
+.video-lib-card .vlb-actions button:first-child{border-right:1px solid #eee}
+.video-lib-card .vlb-actions button:hover{background:#111;color:#fff}
+
+/* ADMIN */
+.admin-grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+@media(max-width:800px){.admin-grid{grid-template-columns:1fr}}
+.admin-card{border:1px solid #ddd;border-radius:8px;padding:.85rem;background:#fafafa}
+.admin-card h3{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;margin-bottom:.6rem;display:flex;justify-content:space-between;align-items:center}
+.admin-stat{display:flex;justify-content:space-between;padding:.35rem 0;border-bottom:1px solid #eee;font-size:.75rem}
+.admin-stat:last-child{border-bottom:none}
+.admin-stat .as-k{color:#666}
+.admin-stat .as-v{font-weight:700;color:#111;font-family:ui-monospace,monospace}
+.admin-table{width:100%;font-size:.7rem;border-collapse:collapse}
+.admin-table th{text-align:left;padding:.35rem .4rem;font-size:.6rem;text-transform:uppercase;letter-spacing:.05em;color:#666;border-bottom:1px solid #ddd;font-weight:700}
+.admin-table td{padding:.35rem .4rem;border-bottom:1px solid #f3f3f3;font-family:ui-monospace,monospace;font-size:.68rem}
+.admin-table tr:hover{background:#fff}
+.admin-table .trunc{max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.admin-scroll{max-height:280px;overflow-y:auto;border:1px solid #eee;border-radius:6px;background:#fff}
+
+.chat-panel{border:1px solid #ddd;border-radius:8px;background:#fff;overflow:hidden;display:flex;flex-direction:column;height:400px}
+.chat-messages{flex:1;overflow-y:auto;padding:.75rem;display:flex;flex-direction:column;gap:.5rem}
+.chat-msg{padding:.55rem .75rem;border-radius:8px;font-size:.78rem;line-height:1.5;max-width:85%}
+.chat-msg.user{background:#111;color:#fff;align-self:flex-end}
+.chat-msg.assistant{background:#f5f5f5;color:#111;align-self:flex-start;white-space:pre-wrap}
+.chat-msg.assistant pre{background:#fff;padding:.5rem;border-radius:4px;overflow:auto;font-size:.68rem;margin-top:.35rem}
+.chat-input-bar{display:flex;gap:.4rem;padding:.6rem;border-top:1px solid #eee;background:#fafafa}
+.chat-input-bar input{flex:1;padding:.55rem .75rem;border:1px solid #ddd;border-radius:6px;background:#fff;font-family:inherit;font-size:.78rem;outline:none}
+.chat-input-bar button{padding:.55rem .9rem;border:1px solid #111;background:#111;color:#fff;border-radius:6px;font-family:inherit;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;cursor:pointer}
+
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:1000;display:none;align-items:center;justify-content:center;padding:1rem}
+.modal.visible{display:flex}
+.modal-inner{background:#fff;border-radius:10px;max-width:760px;width:100%;max-height:88vh;overflow:hidden;display:flex;flex-direction:column}
+.modal-head{padding:.85rem 1.15rem;border-bottom:1px solid #eee;display:flex;justify-content:space-between;align-items:center;gap:.5rem}
+.modal-head h3{font-size:.75rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase}
+.modal-head .close{background:transparent;border:1px solid #ddd;width:26px;height:26px;border-radius:50%;cursor:pointer;color:#666;font-family:inherit;font-size:.8rem;display:flex;align-items:center;justify-content:center;padding:0}
+.modal-body{padding:.9rem 1.15rem;overflow-y:auto;flex:1}
+.modal-body textarea{width:100%;min-height:280px;padding:.85rem .95rem;border:1px solid #ddd;border-radius:6px;background:#fafafa;font-family:ui-monospace,'SF Mono',Menlo,monospace;font-size:.72rem;line-height:1.55;color:#111;resize:vertical;outline:none}
+.modal-actions{display:flex;gap:.5rem;padding:.85rem 1.15rem;border-top:1px solid #eee;background:#fafafa}
+.modal-actions .btn{margin:0;flex:1}
+
+.empty{padding:1.4rem 1rem;text-align:center;color:#999;font-size:.78rem;border:1px dashed #ddd;border-radius:6px;margin-top:.5rem;font-family:ui-monospace,monospace}
+.empty .big{font-size:1.5rem;opacity:.35;display:block;margin-bottom:.35rem}
+
+@keyframes shimmer{0%{background-position:100% 0}100%{background-position:-100% 0}}
+
+@media(max-width:600px){
+  header{flex-direction:column;gap:.55rem}
+  .section-header{padding:.8rem 1rem}
+  .section-content{padding:0 1rem 1rem}
+  .image-grid{grid-template-columns:1fr}
+  body{padding:1rem .6rem 260px}
+  .console-dock{height:150px}
+  .saved-styles-list{grid-template-columns:1fr}
+  .video-lib-list{grid-template-columns:1fr}
+  .main-tab{padding:.55rem .7rem;font-size:.66rem}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <h1>Studio</h1>
+    <p>IndexedDB · Sessions · Admin · Film</p>
+  </div>
+  <div class="head-status">
+    <span class="head-pill" id="pill-db">DB</span>
+    <span class="head-pill" id="pill-keys">0 clé</span>
+    <span class="head-pill" id="pill-images">Images</span>
+    <span class="head-pill gold" id="pill-styles">Styles ⭐ 0</span>
+    <span class="head-pill" id="pill-videos">Vidéos 0</span>
+    <span class="head-pill" id="pill-pending">En cours 0</span>
+  </div>
+</header>
+
+<div class="main-tabs">
+  <button type="button" class="main-tab active" data-tab="studio">🎨 Studio</button>
+  <button type="button" class="main-tab" data-tab="videos">📼 Vidéothèque</button>
+  <button type="button" class="main-tab" data-tab="admin">⚙️ Admin</button>
+</div>
+
+<!-- =============================================== -->
+<!-- TAB STUDIO -->
+<!-- =============================================== -->
+<div class="tab-panel active" id="tab-studio">
+
+  <div class="session-bar">
+    <span class="sb-label">Session :</span>
+    <select id="session-select"></select>
+    <button type="button" id="new-session-btn">+ Nouvelle</button>
+    <button type="button" id="rename-session-btn">Renommer</button>
+    <button type="button" class="danger" id="delete-session-btn">Supprimer</button>
+  </div>
+
+  <div class="section open" id="section-launch">
+    <div class="section-header" data-toggle="section-launch">
+      <span class="section-title"><span class="num">1</span> Lancer <span class="badge gray" id="launch-badge">Prêt</span></span>
+      <span class="chevron">▾</span>
+    </div>
+    <div class="section-body"><div class="section-content">
+      <div class="ref-drop" id="ref-drop">
+        <input type="file" accept="image/*" id="ref-input">
+        <div class="ref-icon">◯</div>
+        <div class="ref-text"><strong>Choisir une image</strong>JPG, PNG, WebP — un seul clic pour tout lancer.</div>
+      </div>
+      <button type="button" class="btn large" id="launch-btn" disabled style="margin-top:.6rem">🚀 Lancer l'analyse et les images</button>
+      <div class="status" id="launch-status-line"><span class="dot"></span><span id="launch-status-text">En attente de l'image.</span></div>
+    </div></div>
+  </div>
+
+  <div class="section open" id="section-images">
+    <div class="section-header" data-toggle="section-images">
+      <span class="section-title"><span class="num">2</span> Images <span class="badge gray" id="images-count-badge">0 / 0</span></span>
+      <span class="chevron">▾</span>
+    </div>
+    <div class="section-body"><div class="section-content">
+      <div class="empty" id="images-empty"><span class="big">◯</span>Les images apparaîtront ici</div>
+      <div class="image-grid" id="image-grid"></div>
+      <div class="gen-bar" id="gen-bar" style="display:none">
+        <div class="row1">
+          <span class="lbl">Générer :</span>
+          <select id="category-select"></select>
+          <input type="text" class="smart-input" id="smart-request" placeholder="…ou décrivez librement (ex : 20 femmes peintres du 20e siècle)">
+          <button type="button" class="btn" id="more-styles-btn">+ 20 images</button>
+        </div>
+        <div class="info" id="cat-info">Catégorie OU description libre — l'IA évite les doublons automatiquement.</div>
+      </div>
+    </div></div>
+  </div>
+
+  <div class="section" id="section-saved">
+    <div class="section-header" data-toggle="section-saved">
+      <span class="section-title"><span class="num">3</span> Mes styles favoris <span class="badge gold" id="saved-count">0</span></span>
+      <span class="chevron">▾</span>
+    </div>
+    <div class="section-body"><div class="section-content">
+      <div class="saved-styles-empty" id="saved-styles-empty">
+        <span class="big">⭐</span>
+        Cliquez sur l'étoile d'une image ou d'une variante pour mémoriser son style (permanent).
+      </div>
+      <div id="saved-styles-container" style="display:none">
+        <div class="saved-styles-list" id="saved-styles-list"></div>
+        <div style="display:flex;gap:.45rem;flex-wrap:wrap;margin-bottom:.5rem">
+          <button type="button" class="btn gold small" id="saved-select-all">Tout sélectionner</button>
+          <button type="button" class="btn gold small" id="saved-deselect-all">Tout désélectionner</button>
+          <button type="button" class="btn ghost small" id="saved-delete-selected">Supprimer sélection</button>
+        </div>
+        <button type="button" class="btn" id="saved-generate-btn">🎨 Appliquer mes favoris à l'image de référence</button>
+        <div class="input-hint">Chaque style favori coché = une image générée sur votre personnage de référence actuel.</div>
+      </div>
+    </div></div>
+  </div>
+
+  <div class="section" id="section-film">
+    <div class="section-header" data-toggle="section-film">
+      <span class="section-title"><span class="num">4</span> Film collectif <span class="badge gray" id="film-count">0</span></span>
+      <span class="chevron">▾</span>
+    </div>
+    <div class="section-body"><div class="section-content">
+      <div class="empty" id="film-selection-empty"><span class="big">☐</span>Cochez des images ci-dessus pour inventer un film qui les relie.</div>
+      <div id="film-selection" style="display:none">
+        <div class="film-thumbs" id="film-thumbs"></div>
+        <button type="button" class="btn" id="film-create-btn">🎬 Inventer un film à partir de ces images</button>
+        <div class="status" id="film-status-line" style="display:none"><span class="dot"></span><span id="film-status-text"></span></div>
+      </div>
+      <div class="film-videos" id="film-videos"></div>
+    </div></div>
+  </div>
+
+</div>
+
+<!-- =============================================== -->
+<!-- TAB VIDEOTHEQUE -->
+<!-- =============================================== -->
+<div class="tab-panel" id="tab-videos">
+
+  <div class="section open" id="section-pending">
+    <div class="section-header" data-toggle="section-pending">
+      <span class="section-title">⏳ Vidéos en cours <span class="badge gold" id="pending-count">0</span></span>
+      <span class="chevron">▾</span>
+    </div>
+    <div class="section-body"><div class="section-content">
+      <div class="empty" id="pending-empty"><span class="big">⏳</span>Aucune vidéo en cours.</div>
+      <div class="video-lib-list" id="pending-list"></div>
+    </div></div>
+  </div>
+
+  <div class="section open" id="section-videolib">
+    <div class="section-header" data-toggle="section-videolib">
+      <span class="section-title">📼 Vidéothèque <span class="badge gray" id="videolib-count">0</span></span>
+      <span class="chevron">▾</span>
+    </div>
+    <div class="section-body"><div class="section-content">
+      <div class="empty" id="videolib-empty"><span class="big">🎬</span>Aucune vidéo pour l'instant.</div>
+      <div class="video-lib-list" id="videolib-list"></div>
+      <div style="display:flex;gap:.5rem;margin-top:.7rem">
+        <button type="button" class="btn ghost small" id="videolib-clear-btn">🗑 Vider la vidéothèque</button>
+      </div>
+    </div></div>
+  </div>
+
+</div>
+
+<!-- =============================================== -->
+<!-- TAB ADMIN -->
+<!-- =============================================== -->
+<div class="tab-panel" id="tab-admin">
+
+  <div class="section open">
+    <div class="section-header" data-toggle="section-admin-keys">
+      <span class="section-title">🔑 Clés API (base de données)</span>
+      <span class="chevron">▾</span>
+    </div>
+    <div class="section-body"><div class="section-content">
+      <textarea class="input-row" id="keys-input" placeholder="sk-xxxx = 20/1&#10;sk-yyyy = 30/2" spellcheck="false"></textarea>
+      <button type="button" class="btn secondary" id="save-keys-btn">Enregistrer les clés</button>
+      <div class="status" id="keys-status-line"><span class="dot"></span><span id="keys-status-text">Aucune clé</span></div>
+      <div class="admin-scroll" style="margin-top:.5rem">
+        <table class="admin-table" id="keys-table">
+          <thead><tr><th>#</th><th>Clé</th><th>Image RPM</th><th>Video RPM</th><th>Utilisations</th><th>Créée</th><th>État</th><th></th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div></div>
+  </div>
+
+  <div class="section open">
+    <div class="section-header" data-toggle="section-admin-stats">
+      <span class="section-title">📊 Statistiques base de données</span>
+      <span class="chevron">▾</span>
+    </div>
+    <div class="section-body"><div class="section-content">
+      <div class="admin-grid">
+        <div class="admin-card">
+          <h3>Contenus</h3>
+          <div id="stats-content"></div>
+        </div>
+        <div class="admin-card">
+          <h3>Utilisation des clés</h3>
+          <div id="stats-keys"></div>
+        </div>
+      </div>
+      <div style="display:flex;gap:.5rem;margin-top:.7rem;flex-wrap:wrap">
+        <button type="button" class="btn secondary small" id="export-db-btn">📥 Exporter la base (JSON)</button>
+        <button type="button" class="btn secondary small" id="import-db-btn">📤 Importer</button>
+        <button type="button" class="btn danger small" id="reset-db-btn">🗑 Réinitialiser la base</button>
+      </div>
+    </div></div>
+  </div>
+
+  <div class="section open">
+    <div class="section-header" data-toggle="section-admin-prompts">
+      <span class="section-title">📝 Prompts système du code (éditable)</span>
+      <span class="chevron">▾</span>
+    </div>
+    <div class="section-body"><div class="section-content">
+      <div style="margin-bottom:.6rem">
+        <label style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#666;display:block;margin-bottom:.3rem">Prompt d'analyse d'image</label>
+        <textarea class="input-row" id="prompt-analysis" style="min-height:120px"></textarea>
+      </div>
+      <div style="margin-bottom:.6rem">
+        <label style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#666;display:block;margin-bottom:.3rem">Prompt de génération de styles (catégorie / libre)</label>
+        <textarea class="input-row" id="prompt-styles" style="min-height:120px"></textarea>
+      </div>
+      <div style="margin-bottom:.6rem">
+        <label style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#666;display:block;margin-bottom:.3rem">Prompt des 5 variantes</label>
+        <textarea class="input-row" id="prompt-variants" style="min-height:120px"></textarea>
+      </div>
+      <div style="margin-bottom:.6rem">
+        <label style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#666;display:block;margin-bottom:.3rem">Prompt du film collectif</label>
+        <textarea class="input-row" id="prompt-film" style="min-height:120px"></textarea>
+      </div>
+      <button type="button" class="btn secondary" id="save-prompts-btn">💾 Enregistrer les prompts</button>
+      <button type="button" class="btn ghost" id="reset-prompts-btn">↺ Restaurer les prompts par défaut</button>
+    </div></div>
+  </div>
+
+  <div class="section open">
+    <div class="section-header" data-toggle="section-admin-chat">
+      <span class="section-title">💬 Chat IA — améliorer les catégories</span>
+      <span class="chevron">▾</span>
+    </div>
+    <div class="section-body"><div class="section-content">
+      <div class="input-hint" style="margin-bottom:.5rem">Demandez à l'IA de créer de nouvelles catégories ou d'améliorer la liste existante. Exemple : "Ajoute 10 catégories très spécifiques pour la peinture japonaise".</div>
+      <div class="chat-panel" id="chat-panel">
+        <div class="chat-messages" id="chat-messages"></div>
+        <div class="chat-input-bar">
+          <input type="text" id="chat-input" placeholder="Votre demande à l'IA…">
+          <button type="button" id="chat-send-btn">Envoyer</button>
+        </div>
+      </div>
+      <button type="button" class="btn gold" id="chat-apply-btn" style="margin-top:.5rem">✓ Appliquer les catégories suggérées</button>
+    </div></div>
+  </div>
+
+  <div class="section">
+    <div class="section-header" data-toggle="section-admin-categories">
+      <span class="section-title">📋 Catégories actuelles <span class="badge gray" id="cat-count-badge">0</span></span>
+      <span class="chevron">▾</span>
+    </div>
+    <div class="section-body"><div class="section-content">
+      <div class="admin-scroll" id="categories-list"></div>
+      <button type="button" class="btn ghost" id="reset-categories-btn" style="margin-top:.5rem">↺ Restaurer les catégories par défaut</button>
+    </div></div>
+  </div>
+
+</div>
+
+<!-- MODAL PROMPT -->
+<div class="modal" id="prompt-modal">
+  <div class="modal-inner">
+    <div class="modal-head">
+      <h3 id="prompt-modal-title">Prompt</h3>
+      <button class="close" type="button" id="prompt-modal-close">✕</button>
+    </div>
+    <div class="modal-body"><textarea id="prompt-modal-text" readonly></textarea></div>
+    <div class="modal-actions">
+      <button class="btn secondary" type="button" id="prompt-modal-copy">Copier</button>
+    </div>
+  </div>
+</div>
+
+<div class="bottom-dock">
+  <div class="progress-strip"><div class="progress-fill" id="progress-fill"></div></div>
+  <div class="progress-meta" id="progress-meta">
+    <span class="lbl" id="progress-label">—</span>
+    <span id="progress-eta">—</span>
+  </div>
+  <div class="console-dock collapsed" id="console-dock">
+    <div class="console-header" id="console-header">
+      <span class="console-title">Console</span>
+      <span class="console-badge" id="console-badge">0</span>
+      <div class="console-actions">
+        <button type="button" id="console-copy">Copier</button>
+        <button type="button" id="console-clear">Effacer</button>
+      </div>
+      <button type="button" class="console-toggle" id="console-toggle">▴</button>
+    </div>
+    <div class="console-body" id="console-body"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<canvas id="noSleepCanvas" width="2" height="2"></canvas>
+<video id="noSleepVideo" playsinline muted loop></video>
+
+<script>
+// ==================================================================
+// CONFIG
+// ==================================================================
+const API_BASE = 'https://apihub.agnes-ai.com/v1';
+const POLL_BASE = 'https://apihub.agnes-ai.com/agnesapi';
+const MODEL_IMAGE = 'agnes-image-2.1-flash';
+const MODEL_TEXT = 'agnes-2.5-flash';
+const MODEL_VIDEO = 'agnes-video-v2.0';
+const FILM_VIDEO_FPS = 12;
+const FILM_VIDEO_FRAMES = 72;
+const VIDEO_INTERVAL_SEC = [8,8,12,12,20,20,25];
+const VIDEO_FIRST_POLL_DELAY = 60;
+const VIDEO_MAX_POLL = 100;
+
+const DB_NAME = 'studio_db_v7';
+const DB_VERSION = 1;
+
+// ==================================================================
+// CATÉGORIES par défaut (structure : générales + spécifiques)
+// ==================================================================
+const DEFAULT_CATEGORIES = [
+  {id:'general_all',   label:'🎯 GÉNÉRAL — Tous les artistes confondus (peintres, réalisateurs, mangakas, photographes, sculpteurs, designers…)'},
+  {id:'general_paint', label:'🎯 GÉNÉRAL — Tous les peintres (toutes époques, tous styles)'},
+  {id:'general_film',  label:'🎯 GÉNÉRAL — Tous les réalisateurs de cinéma'},
+  {id:'general_manga', label:'🎯 GÉNÉRAL — Tous les mangakas et réalisateurs anime'},
+  {id:'general_bd',    label:'🎯 GÉNÉRAL — Tous les auteurs de bande dessinée'},
+  {id:'general_photo', label:'🎯 GÉNÉRAL — Tous les photographes d\'art'},
+  {id:'general_street',label:'🎯 GÉNÉRAL — Tous les street artists / graffeurs'},
+  {id:'general_sculpt',label:'🎯 GÉNÉRAL — Tous les sculpteurs'},
+  {id:'general_design',label:'🎯 GÉNÉRAL — Tous les designers / graphistes'},
+  {id:'general_mode',  label:'🎯 GÉNÉRAL — Tous les créateurs de mode'},
+  {id:'general_illu',  label:'🎯 GÉNÉRAL — Tous les illustrateurs'},
+  {id:'general_contemp',label:'🎯 GÉNÉRAL — Artistes contemporains'},
+  {id:'general_asia',  label:'🎯 GÉNÉRAL — Artistes asiatiques (Chine, Japon, Corée…)'},
+  {id:'general_africa',label:'🎯 GÉNÉRAL — Artistes africains'},
+  {id:'general_femme', label:'🎯 GÉNÉRAL — Femmes artistes célèbres'},
+  // Spécifiques : peinture
+  {id:'paint_renaissance', label:'🖼️ Peinture — Renaissance'},
+  {id:'paint_baroque',     label:'🖼️ Peinture — Baroque'},
+  {id:'paint_classique',   label:'🖼️ Peinture — Grands maîtres classiques (Vermeer, Rembrandt…)'},
+  {id:'paint_romantisme',  label:'🖼️ Peinture — Romantisme'},
+  {id:'paint_realisme',    label:'🖼️ Peinture — Réalisme'},
+  {id:'paint_impress',     label:'🖼️ Peinture — Impressionnisme'},
+  {id:'paint_postimp',     label:'🖼️ Peinture — Post-impressionnisme'},
+  {id:'paint_symbolisme',  label:'🖼️ Peinture — Symbolisme'},
+  {id:'paint_pointill',    label:'🖼️ Peinture — Pointillisme'},
+  {id:'paint_fauvisme',    label:'🖼️ Peinture — Fauvisme'},
+  {id:'paint_cubisme',     label:'🖼️ Peinture — Cubisme'},
+  {id:'paint_expression',  label:'🖼️ Peinture — Expressionnisme'},
+  {id:'paint_surreal',     label:'🖼️ Peinture — Surréalisme'},
+  {id:'paint_abstrait',    label:'🖼️ Peinture — Abstrait'},
+  {id:'paint_abstract_expr', label:'🖼️ Peinture — Expressionnisme abstrait'},
+  {id:'paint_popart',      label:'🖼️ Peinture — Pop art'},
+  {id:'paint_hyperreal',   label:'🖼️ Peinture — Hyperréalisme'},
+  {id:'paint_naif',        label:'🖼️ Peinture — Art naïf'},
+  {id:'paint_orientale',   label:'🖼️ Peinture — Orientale (Japon, Chine)'},
+  {id:'paint_arabe',       label:'🖼️ Peinture — Arabe / persane'},
+  {id:'paint_indienne',    label:'🖼️ Peinture — Indienne'},
+  {id:'paint_africaine',   label:'🖼️ Peinture — Africaine contemporaine'},
+  {id:'paint_latine',      label:'🖼️ Peinture — Amérique latine (muralisme, Frida…)'},
+  {id:'paint_russe',       label:'🖼️ Peinture — Russe / soviétique'},
+  // Cinéma
+  {id:'cinema_classique',  label:'🎬 Cinéma — Réalisateurs classiques (Hitchcock, Welles, Ford…)'},
+  {id:'cinema_nouvelle_vague',label:'🎬 Cinéma — Nouvelle Vague française'},
+  {id:'cinema_neorealisme',label:'🎬 Cinéma — Néoréalisme italien'},
+  {id:'cinema_asian',      label:'🎬 Cinéma — Réalisateurs asiatiques (Kurosawa, Wong Kar-wai…)'},
+  {id:'cinema_japan',      label:'🎬 Cinéma — Japonais (Mizoguchi, Ozu, Kore-eda…)'},
+  {id:'cinema_indian',     label:'🎬 Cinéma — Indien (Bollywood, Ray, Kapoor…)'},
+  {id:'cinema_modern',     label:'🎬 Cinéma — Réalisateurs modernes (Nolan, Fincher, Villeneuve…)'},
+  {id:'cinema_indie',      label:'🎬 Cinéma — Indépendant américain (Jarmusch, Lynch, Anderson…)'},
+  {id:'cinema_anim',       label:'🎬 Cinéma — Animation (Miyazaki, Kon, Pixar, Laika…)'},
+  {id:'cinema_doc',        label:'🎬 Cinéma — Documentaire (Wiseman, Varda, Herzog…)'},
+  {id:'cinema_horror',     label:'🎬 Cinéma — Horreur (Carpenter, Argento, Kubrick…)'},
+  {id:'cinema_scifi',      label:'🎬 Cinéma — Science-fiction (Ridley Scott, Cameron, Tarkovski…)'},
+  // Manga / Anime
+  {id:'manga_shonen',      label:'📺 Manga — Shonen (Toriyama, Oda, Kishimoto…)'},
+  {id:'manga_seinen',      label:'📺 Manga — Seinen (Otomo, Urasawa, Inoue…)'},
+  {id:'manga_shojo',       label:'📺 Manga — Shojo (Takeuchi, CLAMP, Yazawa…)'},
+  {id:'manga_gekiga',      label:'📺 Manga — Gekiga / alternatif (Tatsumi, Tsuge…)'},
+  {id:'manga_anime_dir',   label:'📺 Anime — Réalisateurs (Miyazaki, Anno, Kon, Shinkai…)'},
+  {id:'manga_webtoon',     label:'📺 Webtoon / Manhwa coréen'},
+  // BD
+  {id:'bd_franco_belge',   label:'📚 BD — Franco-belge classique (Hergé, Franquin, Uderzo…)'},
+  {id:'bd_adultes',        label:'📚 BD — Adultes / alternative (Moebius, Bilal, Tardi…)'},
+  {id:'bd_americaine',     label:'📚 Comics américains (Kirby, Moore, Miller…)'},
+  {id:'bd_indie',          label:'📚 Comics indépendants (Mignola, Clowes, Ware…)'},
+  {id:'bd_roman_graphique',label:'📚 Romans graphiques (Spiegelman, Satrapi…)'},
+  {id:'bd_illustration_jeun', label:'📚 Illustration jeunesse (Sendak, Riddell…)'},
+  // Photo
+  {id:'photo_portrait',    label:'📷 Photographie — Portrait (Avedon, Lindbergh…)'},
+  {id:'photo_mode',        label:'📷 Photographie — Mode / éditorial'},
+  {id:'photo_doc',         label:'📷 Photographie — Documentaire / humaniste'},
+  {id:'photo_paysage',     label:'📷 Photographie — Paysage'},
+  {id:'photo_noir',        label:'📷 Photographie — Noir & blanc'},
+  {id:'photo_art',         label:'📷 Photographie — Conceptuelle / artistique'},
+  {id:'photo_guerre',      label:'📷 Photographie — Guerre / reportage'},
+  // Autres
+  {id:'3d_anim',           label:'✨ 3D — Animation studio (Pixar, DreamWorks, Laika)'},
+  {id:'3d_real',           label:'✨ 3D — Réalisme / CGI (Weta, ILM)'},
+  {id:'3d_stylized',       label:'✨ 3D — Stylisé / low-poly'},
+  {id:'street_graffiti',   label:'🏙️ Street art — Graffiti'},
+  {id:'street_mural',      label:'🏙️ Street art — Muralisme / fresque'},
+  {id:'street_pochoir',    label:'🏙️ Street art — Pochoir'},
+  {id:'sculpt_class',      label:'🗿 Sculpture — Classique (Rodin, Michel-Ange…)'},
+  {id:'sculpt_mod',        label:'🗿 Sculpture — Moderne (Brancusi, Giacometti…)'},
+  {id:'sculpt_contemp',    label:'🗿 Sculpture — Contemporaine (Kapoor, Hirst…)'},
+  {id:'graph_design',      label:'🔷 Design graphique / affiche'},
+  {id:'design_indus',      label:'🔷 Design industriel / produit'},
+  {id:'mode_haute',        label:'👗 Mode — Haute couture'},
+  {id:'mode_street',       label:'👗 Mode — Streetwear / contemporaine'},
+  {id:'mode_vintage',      label:'👗 Mode — Vintage / rétro'},
+  {id:'tech_aqua',         label:'💧 Aquarelle'},
+  {id:'tech_ink',          label:'💧 Encre de Chine / sumi-e'},
+  {id:'tech_pastel',       label:'💧 Pastel / fusain'},
+  {id:'tech_collage',      label:'🎨 Collage / mixed media'},
+  {id:'tech_digital',      label:'💻 Art numérique / digital painting'},
+  {id:'tech_pixel',        label:'🎮 Pixel art / 8-bit'},
+  {id:'tech_vintage',      label:'📽️ Pellicule — Super 8 / 16mm / VHS'},
+  {id:'tech_glitch',       label:'💻 Glitch / vaporwave'},
+  {id:'tech_mat',          label:'🎨 Matte painting / concept art'},
+  {id:'art_brut',          label:'🎨 Art brut / outsider'},
+  {id:'art_nouveau',       label:'◈ Art nouveau / Art déco'},
+  {id:'bauhaus',           label:'◈ Bauhaus / constructivisme'},
+  {id:'archi_brut',        label:'🏛️ Architecture — Brutaliste'},
+  {id:'archi_mod',         label:'🏛️ Architecture — Moderne / Bauhaus'},
+  {id:'archi_class',       label:'🏛️ Architecture — Classique / baroque'},
+  {id:'hist_periods',      label:'📜 Périodes historiques (Antiquité → Renaissance → XXe)'},
+  {id:'anim_stop',         label:'🎭 Animation — Stop motion / marionnettes'},
+  {id:'auto_photo',        label:'🚗 Automobile — Photo d\'art'},
+  {id:'food_art',          label:'🍽️ Art culinaire / food styling'},
+  {id:'garden_land',       label:'🌳 Paysagisme / jardins d\'art'},
+  {id:'tattoo_art',        label:'🎨 Tatouage / art corporel'},
+  {id:'calligraphy',       label:'✍️ Calligraphie (latine, arabe, chinoise)'},
+  {id:'origami_paper',     label:'📄 Origami / paper art'},
+  {id:'ceramics',          label:'🏺 Céramique / verrerie'}
+];
+
+// ==================================================================
+// PROMPTS SYSTÈME PAR DÉFAUT
+// ==================================================================
+const DEFAULT_PROMPTS = {
+  analysis: `Tu es directeur artistique et scénariste pour un studio de cinéma IA. Tu analyses une image de référence et tu proposes 24 prompts IMAGE-TO-IMAGE exploitables immédiatement. Tu réponds TOUJOURS en JSON strict, sur une seule ligne, sans markdown.
+
+Analyse cette image et retourne EXACTEMENT ce JSON :
+{
+  "subject": "description précise du personnage",
+  "environment": "description précise du décor",
+  "lighting": "description précise de la lumière",
+  "style_detected": "style visuel détecté",
+  "perfect": { "label": "Copie parfaite", "prompt": "prompt IMAGE-TO-IMAGE en anglais pour reproduire l'image à l'identique avec amélioration" },
+  "reconstructions": [
+    { "label": "Reconstruction #1", "prompt": "TEXT-TO-IMAGE prompt in English, WITHOUT reference, that recreates the image from text only" },
+    { "label": "Reconstruction #2", "prompt": "..." },
+    { "label": "Reconstruction #3", "prompt": "..." }
+  ],
+  "styles": [
+    19 éléments avec des styles connus (Akira, Ghibli, Moebius, Bilal, Marvel, DC, Aquarelle, Huile, Art contemporain, Sculpture, Installation, Banksy, Graffiti, Street art, Encre de Chine, Pastel, Ukiyo-e, Art Nouveau, Cubisme)
+  ],
+  "complementary": { "label": "Complémentaire", "prompt": "reverse shot, opposite gender, same style, same decor" }
+}`,
+  styles: `Tu es directeur artistique senior. Tu connais parfaitement l'histoire de l'art, du cinéma, de la BD, du manga, de la photographie, du design et de la mode. Tu proposes des noms d'artistes, réalisateurs, auteurs, mouvements ou esthétiques PRÉCIS, SANS DOUBLON. Tu réponds TOUJOURS en JSON strict, sur une seule ligne.
+
+Si une CATÉGORIE est fournie : propose 20 noms précis de cette catégorie.
+Si une DEMANDE LIBRE est fournie : interprète-la et propose 20 noms pertinents.
+Évite ABSOLUMENT les doublons listés dans "NOMS DÉJÀ UTILISÉS".
+
+Pour chaque nom, écris un prompt IMAGE-TO-IMAGE qui conserve l'identité du personnage (same face, same identity, same gender, same age) et applique son style visuel.
+
+Retourne UNIQUEMENT : { "styles": [ { "label": "Nom précis", "prompt": "IMAGE-TO-IMAGE prompt in English" }, ... 20 éléments ] }`,
+  variants: `Tu es scénariste et directeur artistique. Tu conçois 5 plans qui prolongent une image de référence. Tu réponds TOUJOURS en JSON strict.
+
+Le STYLE VISUEL de l'image doit être VERROUILLÉ dans chaque prompt. Reproduis intégralement le style décrit dans le STYLE LOCK.
+
+Structure OBLIGATOIRE :
+1. "Moi + partenaire" — personnage AVEC UN NOUVEAU PARTENAIRE dans la même scène.
+2. "Moi seul" — personnage SEUL dans un NOUVEAU décor.
+3. "Nouveau personnage" — personnage DIFFÉRENT (visage/genre/identité différents).
+4. "Nouveau personnage en ville" — personnage DIFFÉRENT dans une VILLE.
+5. "Nouveau personnage en action" — personnage DIFFÉRENT en ACTION avec un VÉHICULE.
+
+Retourne UNIQUEMENT : { "plans": [ { "label": "...", "prompt": "..." }, ... 5 éléments ] }`,
+  film: `Tu es scénariste et réalisateur. Tu écris des micro-scènes de film en français avec dialogues naturels. Tu réponds TOUJOURS en JSON strict.
+
+Écris une histoire collective qui LIE les images fournies en une scène cohérente.
+Chaque plan a UNE PHRASE de dialogue en FRANÇAIS (6-14 mots).
+Pas de musique. Uniquement dialogues + bruitages diégétiques.
+
+Retourne UNIQUEMENT : { "title": "...", "story": "...", "tone": "...", "videos": [ { "scene": "...", "dialogue_fr": "..." }, ... ] }`
+};
+
+// ==================================================================
+// INDEXEDDB WRAPPER
+// ==================================================================
+let db = null;
+
+function openDB(){
+  return new Promise((resolve, reject)=>{
+    const req = indexedDB.open(DB_NAME, DB_VERSION);
+    req.onerror = ()=>reject(req.error);
+    req.onsuccess = ()=>resolve(req.result);
+    req.onupgradeneeded = (ev)=>{
+      const d = ev.target.result;
+      if(!d.objectStoreNames.contains('keys')){
+        const s = d.createObjectStore('keys', {keyPath:'id'});
+        s.createIndex('key', 'key', {unique:true});
+      }
+      if(!d.objectStoreNames.contains('sessions')){
+        d.createObjectStore('sessions', {keyPath:'id'});
+      }
+      if(!d.objectStoreNames.contains('savedStyles')){
+        d.createObjectStore('savedStyles', {keyPath:'id'});
+      }
+      if(!d.objectStoreNames.contains('videosDB')){
+        const s = d.createObjectStore('videosDB', {keyPath:'id'});
+        s.createIndex('sessionId', 'sessionId');
+        s.createIndex('createdAt', 'createdAt');
+      }
+      if(!d.objectStoreNames.contains('pendingVideos')){
+        const s = d.createObjectStore('pendingVideos', {keyPath:'id'});
+        s.createIndex('compositeId', 'compositeId', {unique:true});
+      }
+      if(!d.objectStoreNames.contains('config')){
+        d.createObjectStore('config', {keyPath:'key'});
+      }
+      if(!d.objectStoreNames.contains('chatHistory')){
+        const s = d.createObjectStore('chatHistory', {keyPath:'id', autoIncrement:true});
+        s.createIndex('createdAt', 'createdAt');
+      }
+    };
+  });
+}
+
+function dbGet(store, key){
+  return new Promise((resolve,reject)=>{
+    const tx = db.transaction(store, 'readonly');
+    const req = tx.objectStore(store).get(key);
+    req.onsuccess = ()=>resolve(req.result);
+    req.onerror = ()=>reject(req.error);
+  });
+}
+function dbPut(store, value){
+  return new Promise((resolve,reject)=>{
+    const tx = db.transaction(store, 'readwrite');
+    const req = tx.objectStore(store).put(value);
+    req.onsuccess = ()=>resolve(req.result);
+    req.onerror = ()=>reject(req.error);
+  });
+}
+function dbDelete(store, key){
+  return new Promise((resolve,reject)=>{
+    const tx = db.transaction(store, 'readwrite');
+    const req = tx.objectStore(store).delete(key);
+    req.onsuccess = ()=>resolve();
+    req.onerror = ()=>reject(req.error);
+  });
+}
+function dbGetAll(store){
+  return new Promise((resolve,reject)=>{
+    const tx = db.transaction(store, 'readonly');
+    const req = tx.objectStore(store).getAll();
+    req.onsuccess = ()=>resolve(req.result || []);
+    req.onerror = ()=>reject(req.error);
+  });
+}
+function dbClear(store){
+  return new Promise((resolve,reject)=>{
+    const tx = db.transaction(store, 'readwrite');
+    const req = tx.objectStore(store).clear();
+    req.onsuccess = ()=>resolve();
+    req.onerror = ()=>reject(req.error);
+  });
+}
+
+// ==================================================================
+// STATE
+// ==================================================================
+const state = {
+  // DB mirrors
+  keys: [],
+  sessionsIndex: [],
+  currentSessionId: null,
+  savedStyles: [],
+  videosDB: [],
+  pendingVideos: [],
+  config: {},
+  chatHistory: [],
+  categories: [],
+  savedStyleSelected: {},
+  // session data
+  reference: null,
+  analysis: null,
+  images: [],
+  variantsByImage: {}, // { parentImgId: { status, plans: [...] } }
+  styleLibrary: {},    // { catId: [labels...] }
+  filmSelection: [],
+  film: null,
+  lastCategory: 'general_all',
+  // runtime
+  isRunning: false,
+  isAnalyzing: false,
+  isExtending: false,
+  isGeneratingVariants: {},
+  isGeneratingFilm: false,
+  isGeneratingFromSaved: false,
+  stopRequested: false,
+  wakeLockSentinel: null,
+  canvasStream: null,
+  canvasInterval: null
+};
+
+let nextImgId = 1;
+let nextVariantId = 1;
+let logCount = 0;
+
+// ==================================================================
+// UTILS
+// ==================================================================
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
+function nowTime(){return new Date().toLocaleTimeString('fr-FR',{hour12:false})}
+function fmtEta(sec){if(!isFinite(sec)||sec<0)return '—';if(sec<60)return Math.round(sec)+'s';const m=Math.floor(sec/60);const s=Math.round(sec%60);return m+'m'+(s>0?' '+s+'s':'')}
+function $(id){return document.getElementById(id)}
+function uid(p){return (p||'id')+'_'+Date.now()+'_'+Math.random().toString(36).slice(2,7)}
+
+// ==================================================================
+// LOG
+// ==================================================================
+function log(level, cat, msg){
+  const body = $('console-body');
+  if(!body) return;
+  const e = document.createElement('div');
+  e.className = 'log-entry ' + (level||'info');
+  e.innerHTML = '<span class="log-time">'+esc(nowTime())+'</span><span class="log-cat">'+esc(cat)+'</span><span class="log-msg">'+esc(msg)+'</span>';
+  body.appendChild(e);
+  while(body.children.length > 400) body.removeChild(body.firstChild);
+  body.scrollTop = body.scrollHeight;
+  logCount++;
+  const b = $('console-badge'); if(b) b.textContent = logCount;
+}
+function clearConsole(){const b=$('console-body');if(b)b.innerHTML='';logCount=0;const bd=$('console-badge');if(bd)bd.textContent='0'}
+function copyConsole(){
+  const txt = Array.from(document.querySelectorAll('#console-body .log-entry')).map(el=>{
+    const t = el.querySelector('.log-time')?.textContent || '';
+    const c = el.querySelector('.log-cat')?.textContent || '';
+    const m = el.querySelector('.log-msg')?.textContent || '';
+    return t+' ['+c+'] '+m;
+  }).join('\n');
+  copyToClipboard(txt).then(ok=>toast(ok?'Console copiée':'Échec', ok?'ok':'err'));
+}
+async function copyToClipboard(text){
+  try{ if(navigator.clipboard && window.isSecureContext){ await navigator.clipboard.writeText(text); return true } }catch(e){}
+  try{ const ta = document.createElement('textarea'); ta.value = text; ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta); ta.focus(); ta.select(); const ok = document.execCommand('copy'); document.body.removeChild(ta); return ok }catch(e){return false}
+}
+let toastTO=null;
+function toast(msg, type){
+  type = type || 'ok';
+  const t = $('toast'); if(!t) return;
+  t.classList.remove('visible','error','warn','gold'); t.textContent = msg;
+  if(type==='err') t.classList.add('error');
+  if(type==='warn') t.classList.add('warn');
+  if(type==='gold') t.classList.add('gold');
+  void t.offsetWidth; t.classList.add('visible');
+  if(toastTO) clearTimeout(toastTO);
+  toastTO = setTimeout(()=>t.classList.remove('visible'), 2800);
+}
+function showProgress(l,e){ $('progress-meta').classList.add('visible'); if(l!==undefined)$('progress-label').textContent=l; if(e!==undefined)$('progress-eta').textContent=e }
+function setProgress(p){ $('progress-fill').style.width = Math.max(0, Math.min(100,p)) + '%' }
+function hideProgress(){ $('progress-meta').classList.remove('visible'); $('progress-fill').style.width='0%' }
+
+// ==================================================================
+// API
+// ==================================================================
+function parseKeys(raw){
+  const lines = String(raw||'').split(/\r?\n/);
+  const out = []; const seen = {};
+  for(const line of lines){
+    const l = line.trim(); if(!l || l.startsWith('#')) continue;
+    let key = l, imgRpm = 20, videoRpm = 1;
+    const m = l.match(/^([^=|]+?)\s*[=|]\s*(\d+)(?:\s*\/\s*(\d+))?\s*$/);
+    if(m){
+      key = m[1].trim();
+      const ir = parseInt(m[2],10); if(!isNaN(ir)&&ir>0) imgRpm = Math.min(500, Math.max(1,ir));
+      if(m[3]){ const vr = parseInt(m[3],10); if(!isNaN(vr)&&vr>0) videoRpm = Math.min(500, Math.max(1,vr)) }
+    }
+    key = key.trim();
+    if(!key.startsWith('sk-')) continue;
+    if(seen[key]) continue; seen[key]=true;
+    out.push({key, imgRpm, videoRpm});
+  }
+  return out;
+}
+
+function getAvailableKey(kind){
+  const now = Date.now(), cutoff = now - 60000;
+  const cands = [];
+  for(const k of state.keys){
+    if(!k.active) continue;
+    if(k.cooldownUntil > now) continue;
+    k.imgTimes = (k.imgTimes||[]).filter(t=>t>cutoff);
+    k.videoTimes = (k.videoTimes||[]).filter(t=>t>cutoff);
+    const times = kind==='video'? k.videoTimes : k.imgTimes;
+    const rpm = kind==='video'? k.videoRpm : k.imgRpm;
+    if(times.length >= rpm) continue;
+    cands.push(k);
+  }
+  if(cands.length === 0) return null;
+  cands.sort((a,b)=>{
+    const ta = kind==='video'? a.videoTimes : a.imgTimes;
+    const tb = kind==='video'? b.videoTimes : b.imgTimes;
+    return ta.length - tb.length;
+  });
+  return cands[0];
+}
+function getSoonestMs(kind){
+  const now = Date.now(), cutoff = now - 60000;
+  let soonest = Infinity, anyActive = false;
+  for(const k of state.keys){
+    if(!k.active) continue; anyActive = true;
+    if(k.cooldownUntil > now){ soonest = Math.min(soonest, k.cooldownUntil - now); continue }
+    k.imgTimes = (k.imgTimes||[]).filter(t=>t>cutoff);
+    k.videoTimes = (k.videoTimes||[]).filter(t=>t>cutoff);
+    const times = kind==='video'? k.videoTimes : k.imgTimes;
+    const rpm = kind==='video'? k.videoRpm : k.imgRpm;
+    if(times.length >= rpm){ const oldest = Math.min(...times); soonest = Math.min(soonest, oldest + 60000 - now) }
+    else return 0;
+  }
+  if(!anyActive) return 30000;
+  if(soonest === Infinity) return 500;
+  return Math.max(150, soonest);
+}
+async function acquireKey(kind){
+  kind = kind || 'image';
+  while(true){
+    if(state.stopRequested) throw new Error('Arrêt demandé');
+    const k = getAvailableKey(kind);
+    if(k) return k;
+    const wait = getSoonestMs(kind);
+    log('warn','CLÉS','Attente '+Math.ceil(wait/1000)+'s');
+    await sleep(wait + 80);
+  }
+}
+async function registerRequest(keyObj, kind){
+  kind = kind || 'image';
+  if(kind==='video'){ keyObj.videoTimes = (keyObj.videoTimes||[]); keyObj.videoTimes.push(Date.now()); keyObj.videoUsage = (keyObj.videoUsage||0)+1 }
+  else{ keyObj.imgTimes = (keyObj.imgTimes||[]); keyObj.imgTimes.push(Date.now()); keyObj.imgUsage = (keyObj.imgUsage||0)+1 }
+  keyObj.lastUsed = Date.now();
+  // Persist usage counters
+  try{
+    const stored = await dbGet('keys', keyObj.id);
+    if(stored){
+      stored.imgUsage = keyObj.imgUsage || stored.imgUsage || 0;
+      stored.videoUsage = keyObj.videoUsage || stored.videoUsage || 0;
+      stored.lastUsed = keyObj.lastUsed;
+      await dbPut('keys', stored);
+    }
+  }catch(e){}
+  renderKeysTable();
+}
+
+async function callImage(prompt, referenceUri, keyObj){
+  const body = {model:MODEL_IMAGE, prompt, n:1, size:'1K', ratio:'9:16', extra_body:{response_format:'url'}};
+  if(referenceUri) body.extra_body.image = [referenceUri];
+  await registerRequest(keyObj,'image');
+  log('api','IMAGE','POST · clé '+keyObj.key.slice(-4)+(referenceUri?' +ref':' prompt-only'));
+  const res = await fetch(API_BASE + '/images/generations', {method:'POST', headers:{'Authorization':'Bearer '+keyObj.key,'Content-Type':'application/json'}, body: JSON.stringify(body)});
+  if(res.status===429){ keyObj.cooldownUntil=Date.now()+30000; throw new Error('HTTP 429') }
+  if(res.status===401||res.status===403){ keyObj.errorCount=(keyObj.errorCount||0)+1; if(keyObj.errorCount>=3) keyObj.active=false; const e=new Error('HTTP '+res.status); e.status=res.status; throw e }
+  if(!res.ok){ const t=await res.text().catch(()=>''); throw new Error('HTTP '+res.status+' — '+t.slice(0,150)) }
+  const data = await res.json();
+  const item = data.data && data.data[0];
+  if(!item) throw new Error('Pas d\'image');
+  if(item.url) return item.url;
+  if(item.b64_json) return 'data:image/png;base64,'+item.b64_json;
+  throw new Error('Format inconnu');
+}
+
+async function callText(sysPrompt, userText, keyObj, maxTokens, temperature){
+  const body = {model:MODEL_TEXT, messages:[{role:'system',content:sysPrompt},{role:'user',content:userText}], temperature: temperature!==undefined?temperature:0.7, max_tokens:maxTokens||4000, response_format:{type:'json_object'}};
+  await registerRequest(keyObj,'video');
+  log('api','TEXT','POST · clé '+keyObj.key.slice(-4));
+  const res = await fetch(API_BASE + '/chat/completions', {method:'POST', headers:{'Authorization':'Bearer '+keyObj.key,'Content-Type':'application/json'}, body: JSON.stringify(body)});
+  if(res.status===429){ keyObj.cooldownUntil=Date.now()+30000; throw new Error('HTTP 429') }
+  if(res.status===401||res.status===403){ keyObj.errorCount=(keyObj.errorCount||0)+1; if(keyObj.errorCount>=3) keyObj.active=false; const e=new Error('HTTP '+res.status); e.status=res.status; throw e }
+  if(!res.ok){ const t=await res.text().catch(()=>''); throw new Error('HTTP '+res.status+' — '+t.slice(0,150)) }
+  const data = await res.json();
+  const ch = data.choices && data.choices[0];
+  let content = ch && ch.message && ch.message.content;
+  if(!content && ch && ch.message && ch.message.reasoning_content) content = ch.message.reasoning_content;
+  if(!content) throw new Error('Pas de contenu');
+  return content;
+}
+
+async function callVision(sysPrompt, userText, imageUri, keyObj, maxTokens){
+  const body = {model:MODEL_TEXT, messages:[{role:'system',content:sysPrompt},{role:'user',content:[{type:'text',text:userText},{type:'image_url',image_url:{url:imageUri}}]}], temperature:0.5, max_tokens:maxTokens||4000, response_format:{type:'json_object'}};
+  await registerRequest(keyObj,'video');
+  log('api','VISION','POST · clé '+keyObj.key.slice(-4));
+  const res = await fetch(API_BASE + '/chat/completions', {method:'POST', headers:{'Authorization':'Bearer '+keyObj.key,'Content-Type':'application/json'}, body: JSON.stringify(body)});
+  if(res.status===429){ keyObj.cooldownUntil=Date.now()+30000; throw new Error('HTTP 429') }
+  if(res.status===401||res.status===403){ keyObj.errorCount=(keyObj.errorCount||0)+1; if(keyObj.errorCount>=3) keyObj.active=false; const e=new Error('HTTP '+res.status); e.status=res.status; throw e }
+  if(!res.ok){ const t=await res.text().catch(()=>''); throw new Error('HTTP '+res.status+' — '+t.slice(0,150)) }
+  const data = await res.json();
+  const ch = data.choices && data.choices[0];
+  let content = ch && ch.message && ch.message.content;
+  if(!content && ch && ch.message && ch.message.reasoning_content) content = ch.message.reasoning_content;
+  if(!content) throw new Error('Pas de contenu');
+  return content;
+}
+
+function decodeCompositeId(c){
+  if(!c || typeof c !== 'string') return null;
+  if(!c.startsWith('video_')) return null;
+  let b64 = c.slice(6); while(b64.length % 4) b64 += '=';
+  try{ const d = atob(b64); const m = d.match(/video_id:([^;]+)/); if(m&&m[1]) return m[1].trim() }catch(e){}
+  return null;
+}
+async function createVideoTask(prompt, firstFrameUri, keyObj, numFrames, frameRate){
+  numFrames = numFrames || FILM_VIDEO_FRAMES;
+  frameRate = frameRate || FILM_VIDEO_FPS;
+  const body = {model:MODEL_VIDEO, prompt, num_frames:numFrames, frame_rate:frameRate};
+  if(firstFrameUri) body.image = firstFrameUri;
+  await registerRequest(keyObj,'video');
+  log('api','VIDEO','POST · clé '+keyObj.key.slice(-4));
+  const res = await fetch(API_BASE + '/videos', {method:'POST', headers:{'Authorization':'Bearer '+keyObj.key,'Content-Type':'application/json'}, body: JSON.stringify(body)});
+  if(res.status===429){ keyObj.cooldownUntil=Date.now()+30000; throw new Error('HTTP 429') }
+  if(res.status===401||res.status===403){ keyObj.errorCount=(keyObj.errorCount||0)+1; if(keyObj.errorCount>=3) keyObj.active=false; const e=new Error('HTTP '+res.status); e.status=res.status; throw e }
+  if(!res.ok){ const t=await res.text().catch(()=>''); throw new Error('HTTP '+res.status+' — '+t.slice(0,200)) }
+  const data = await res.json();
+  const compositeId = data.video_id || data.id || data.task_id;
+  if(!compositeId) throw new Error('Pas de video_id');
+  const innerId = decodeCompositeId(compositeId);
+  return {compositeId, innerId};
+}
+async function pollVideoTask(videoIdObj, keyObj, onProgress){
+  const cands = [{label:'composite', value:videoIdObj.compositeId}];
+  if(videoIdObj.innerId && videoIdObj.innerId !== videoIdObj.compositeId) cands.push({label:'inner', value:videoIdObj.innerId});
+  let rem = VIDEO_FIRST_POLL_DELAY;
+  while(rem>0){
+    if(state.stopRequested) throw new Error('Arrêt demandé');
+    onProgress('Préparation — '+rem+'s'); await sleep(1000); rem--;
+  }
+  for(let attempt=0; attempt<VIDEO_MAX_POLL; attempt++){
+    if(state.stopRequested) throw new Error('Arrêt demandé');
+    if(attempt>0){
+      const idx = Math.min(attempt-1, VIDEO_INTERVAL_SEC.length-1);
+      let r = VIDEO_INTERVAL_SEC[idx];
+      while(r>0){ if(state.stopRequested) throw new Error('Arrêt demandé'); onProgress('Création — '+r+'s'); await sleep(1000); r-- }
+    }
+    const cand = cands[attempt % cands.length];
+    const url = POLL_BASE + '?video_id=' + encodeURIComponent(cand.value) + '&model_name=' + encodeURIComponent(MODEL_VIDEO);
+    try{
+      const res = await fetch(url, {headers:{'Authorization':'Bearer '+keyObj.key}});
+      if(res.status===404||res.status===400) continue;
+      if(res.status===429){ await sleep(15000); continue }
+      if(!res.ok){ await sleep(8000); continue }
+      const d = await res.json();
+      const status = d.status || 'unknown';
+      const progress = d.progress || 0;
+      onProgress('Création — '+progress+'%');
+      if(status==='completed'||status==='succeeded'||status==='done'){
+        const vurl = (d.metadata && d.metadata.url) || d.url || (d.output && d.output.url);
+        if(!vurl) throw new Error('Terminé mais pas d\'URL');
+        return vurl;
+      }
+      if(status==='failed'||status==='error'||status==='cancelled') throw new Error('Échec ('+status+')');
+    }catch(e){
+      if(e.message === 'Arrêt demandé') throw e;
+      log('warn','POLL', e.message);
+    }
+  }
+  throw new Error('Délai maximal dépassé');
+}
+
+function parseJson(text){
+  if(!text) return null;
+  let c = String(text).trim();
+  const fm = c.match(/```(?:json)?\s*([\s\S]*?)```/); if(fm) c = fm[1].trim();
+  const fb = c.indexOf('{'); if(fb<0) return null;
+  c = c.slice(fb);
+  const lb = c.lastIndexOf('}'); if(lb>0) c = c.slice(0, lb+1);
+  try{ return JSON.parse(c) }catch(e){}
+  let out = ''; let inS = false; let esc = false;
+  for(let i=0;i<c.length;i++){
+    const ch = c[i];
+    if(esc){ out+=ch; esc=false; continue }
+    if(ch==='\\'){ out+=ch; esc=true; continue }
+    if(ch==='"'){ inS=!inS; out+=ch; continue }
+    if(inS){
+      if(ch==='\n'){ out+='\\n'; continue }
+      if(ch==='\r'){ out+='\\r'; continue }
+      if(ch==='\t'){ out+='\\t'; continue }
+      const code = ch.charCodeAt(0);
+      if(code<32){ out+='\\u'+code.toString(16).padStart(4,'0'); continue }
+    }
+    out+=ch;
+  }
+  out = out.replace(/,\s*([}\]])/g,'$1');
+  try{ return JSON.parse(out) }catch(e){}
+  return null;
+}
+
+// ==================================================================
+// WAKE LOCK
+// ==================================================================
+async function activateWakeLock(){
+  try{ if('wakeLock' in navigator && typeof navigator.wakeLock.request === 'function'){ state.wakeLockSentinel = await navigator.wakeLock.request('screen'); state.wakeLockSentinel.addEventListener('release',()=>{state.wakeLockSentinel=null}); return true } }catch(e){}
+  try{
+    const canvas = $('noSleepCanvas'), video = $('noSleepVideo'), ctx = canvas.getContext('2d');
+    ctx.fillStyle='#000'; ctx.fillRect(0,0,2,2);
+    if(typeof canvas.captureStream === 'function'){
+      state.canvasStream = canvas.captureStream(1);
+      let t = false;
+      state.canvasInterval = setInterval(()=>{ t=!t; ctx.fillStyle = t?'#000':'#010101'; ctx.fillRect(0,0,2,2) }, 1000);
+      video.srcObject = state.canvasStream; video.muted = true; video.playsInline = true;
+      video.play().catch(()=>{});
+      return true;
+    }
+  }catch(e){}
+  return false;
+}
+async function deactivateWakeLock(){
+  if(state.wakeLockSentinel){try{await state.wakeLockSentinel.release()}catch(e){} state.wakeLockSentinel = null}
+  if(state.canvasInterval){clearInterval(state.canvasInterval); state.canvasInterval = null}
+  const v = $('noSleepVideo');
+  if(v){try{v.pause(); v.srcObject=null}catch(e){}}
+  if(state.canvasStream){try{state.canvasStream.getTracks().forEach(t=>t.stop())}catch(e){} state.canvasStream = null}
+}
+
+// ==================================================================
+// FILE UTILS
+// ==================================================================
+function fileToDataUri(file){
+  return new Promise((res,rej)=>{
+    const r = new FileReader();
+    r.onload = e => res(e.target.result);
+    r.onerror = ()=>rej(new Error('Lecture échouée'));
+    r.readAsDataURL(file);
+  });
+}
+function compressDataUri(dataUri, maxSide){
+  return new Promise(resolve=>{
+    const img = new Image();
+    img.onload = ()=>{
+      try{
+        let w = img.width, h = img.height;
+        const s = Math.min(1, maxSide/Math.max(w,h));
+        w = Math.round(w*s); h = Math.round(h*s);
+        const c = document.createElement('canvas');
+        c.width=w; c.height=h;
+        c.getContext('2d').drawImage(img,0,0,w,h);
+        resolve(c.toDataURL('image/jpeg', 0.9));
+      }catch(e){resolve(dataUri)}
+    };
+    img.onerror = ()=>resolve(dataUri);
+    img.src = dataUri;
+  });
+}
+function downloadUrl(url, filename){
+  const a = document.createElement('a');
+  a.href = url; a.download = filename; a.target='_blank';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+}
+
+// ==================================================================
+// SESSION MANAGEMENT
+// ==================================================================
+async function loadSessionsIndex(){
+  try{
+    const arr = await dbGetAll('sessions');
+    return arr.sort((a,b)=>(b.updatedAt||0)-(a.updatedAt||0));
+  }catch(e){ return [] }
+}
+async function saveSessionData(){
+  if(!state.currentSessionId) return;
+  const data = {
+    id: state.currentSessionId,
+    name: (state.sessionsIndex.find(s=>s.id===state.currentSessionId)||{}).name || 'Session',
+    createdAt: (state.sessionsIndex.find(s=>s.id===state.currentSessionId)||{}).createdAt || Date.now(),
+    updatedAt: Date.now(),
+    reference: state.reference,
+    analysis: state.analysis,
+    images: state.images.map(i=>({
+      id:i.id, kind:i.kind, label:i.label, prompt:i.prompt, status:i.status, url:i.url,
+      keyLast4:i.keyLast4, error:i.error, sourceStyle:i.sourceStyle||null,
+      sourceImageId:i.sourceImageId||null, savedAsStyle:i.savedAsStyle||false
+    })),
+    variantsByImage: state.variantsByImage,
+    styleLibrary: state.styleLibrary,
+    filmSelection: state.filmSelection,
+    film: state.film,
+    lastCategory: state.lastCategory
+  };
+  try{ await dbPut('sessions', data) }catch(e){ log('warn','SESSION','save '+e.message) }
+  const idx = state.sessionsIndex.find(s=>s.id === state.currentSessionId);
+  if(idx){
+    idx.updatedAt = data.updatedAt;
+    idx.imageCount = state.images.filter(i=>i.status==='done').length;
+  }
+}
+async function switchToSession(id){
+  await saveSessionData();
+  state.currentSessionId = id;
+  await dbPut('config', {key:'currentSession', value:id});
+  const data = await dbGet('sessions', id);
+  if(data){
+    state.reference = data.reference || null;
+    state.analysis = data.analysis || null;
+    state.images = data.images || [];
+    state.images.forEach(i=>{ if(i.status==='loading'){ i.status='error'; i.error='Interrompu' } });
+    nextImgId = Math.max(1, ...state.images.map(i=>i.id||0)) + 1;
+    state.variantsByImage = data.variantsByImage || {};
+    Object.values(state.variantsByImage).forEach(entry=>{
+      if(entry && Array.isArray(entry.plans)) entry.plans.forEach(p=>{ if(p.status==='loading'){ p.status='error'; p.error='Interrompu' } });
+    });
+    let maxV = 0;
+    Object.values(state.variantsByImage).forEach(e=>{
+      if(e && Array.isArray(e.plans)) e.plans.forEach(p=>{ if(p.id && p.id>maxV) maxV = p.id });
+    });
+    nextVariantId = maxV + 1;
+    state.styleLibrary = data.styleLibrary || {};
+    state.filmSelection = data.filmSelection || [];
+    state.film = data.film || null;
+    if(state.film && (state.film.status==='analyzing'||state.film.status==='generating')){
+      state.film.status = 'error'; state.film.error = 'Interrompu';
+    }
+    state.lastCategory = data.lastCategory || 'general_all';
+  }else{
+    state.reference = null; state.analysis = null; state.images = []; state.variantsByImage = {};
+    state.styleLibrary = {}; state.filmSelection = []; state.film = null;
+  }
+  state.isRunning=false; state.isAnalyzing=false; state.isExtending=false;
+  state.isGeneratingVariants = {}; state.isGeneratingFilm=false; state.isGeneratingFromSaved=false;
+  renderAll();
+  log('state','SESSION','Activée : '+(state.sessionsIndex.find(s=>s.id===id)?.name || id));
+}
+async function createSession(name){
+  const id = uid('sess');
+  const sess = {id, name: name||('Session '+ (state.sessionsIndex.length+1)), createdAt: Date.now(), updatedAt: Date.now(), imageCount:0};
+  state.sessionsIndex.push(sess);
+  await dbPut('sessions', sess);
+  await switchToSession(id);
+  log('success','SESSION','Créée');
+}
+async function renameSession(){
+  const cur = state.sessionsIndex.find(s=>s.id === state.currentSessionId);
+  if(!cur) return;
+  const name = prompt('Nouveau nom :', cur.name);
+  if(name && name.trim()){
+    cur.name = name.trim();
+    await dbPut('sessions', cur);
+    renderSessionBar();
+  }
+}
+async function deleteSession(){
+  if(state.sessionsIndex.length <= 1){ toast('Au moins une session requise','warn'); return }
+  if(!confirm('Supprimer cette session ?')) return;
+  const id = state.currentSessionId;
+  await dbDelete('sessions', id);
+  state.sessionsIndex = state.sessionsIndex.filter(s=>s.id !== id);
+  await switchToSession(state.sessionsIndex[0].id);
+}
+
+// ==================================================================
+// RENDER
+// ==================================================================
+function renderSessionBar(){
+  const sel = $('session-select'); if(!sel) return;
+  sel.innerHTML = state.sessionsIndex.map(s=>'<option value="'+s.id+'"'+(s.id===state.currentSessionId?' selected':'')+'>'+esc(s.name)+' · '+(s.imageCount||0)+' img</option>').join('');
+}
+function renderPills(){
+  const kp = $('pill-keys'), ip = $('pill-images'), sp = $('pill-styles'), vp = $('pill-videos'), pp = $('pill-pending'), dp = $('pill-db');
+  const activeKeys = state.keys.filter(k=>k.active).length;
+  kp.textContent = activeKeys+' clé'+(activeKeys>1?'s':'');
+  kp.className = 'head-pill ' + (activeKeys>0?'on':'');
+  const doneImgs = state.images.filter(i=>i.status==='done').length;
+  ip.textContent = doneImgs > 0 ? (doneImgs+' images') : 'Images';
+  ip.className = 'head-pill ' + (doneImgs>0?'on':'');
+  sp.textContent = 'Styles ⭐ '+state.savedStyles.length;
+  sp.className = 'head-pill gold ' + (state.savedStyles.length>0?'on':'');
+  vp.textContent = 'Vidéos '+state.videosDB.length;
+  vp.className = 'head-pill ' + (state.videosDB.length>0?'on':'');
+  pp.textContent = 'En cours '+state.pendingVideos.length;
+  pp.className = 'head-pill ' + (state.pendingVideos.length>0?'on gold':'');
+  if(dp){ dp.textContent = 'DB ✓'; dp.className = 'head-pill on' }
+}
+function renderAll(){
+  renderSessionBar();
+  const ki = $('keys-input');
+  if(ki && state.keys.length > 0){
+    ki.value = state.keys.map(k=>(k.imgRpm!==20||k.videoRpm!==1)?(k.key+' = '+k.imgRpm+'/'+k.videoRpm):k.key).join('\n');
+  }
+  renderKeysStatus();
+  renderReferencePreview();
+  renderCategorySelect();
+  renderImages();
+  renderSavedStyles();
+  renderFilmSection();
+  renderVideoLibrary();
+  renderPendingVideos();
+  renderKeysTable();
+  renderAdminStats();
+  renderCategoriesList();
+  renderPromptsAdmin();
+  renderPills();
+  updateButtons();
+}
+
+function renderKeysStatus(){
+  const line = $('keys-status-line'), txt = $('keys-status-text');
+  if(!line || !txt) return;
+  if(state.keys.length === 0){ line.classList.remove('ok'); txt.textContent='Aucune clé'; return }
+  line.classList.add('ok');
+  const active = state.keys.filter(k=>k.active).length;
+  const ti = state.keys.reduce((s,k)=>s+(k.active?k.imgRpm:0),0);
+  const tv = state.keys.reduce((s,k)=>s+(k.active?k.videoRpm:0),0);
+  txt.textContent = active+' clé(s) · '+ti+' RPM image · '+tv+' RPM video';
+}
+
+function renderKeysTable(){
+  const tbody = document.querySelector('#keys-table tbody');
+  if(!tbody) return;
+  tbody.innerHTML = state.keys.map((k,i)=>
+    '<tr>'+
+      '<td>'+(i+1)+'</td>'+
+      '<td class="trunc" title="'+esc(k.key)+'">'+esc(k.key.slice(0,10))+'…'+esc(k.key.slice(-4))+'</td>'+
+      '<td>'+k.imgRpm+'</td>'+
+      '<td>'+k.videoRpm+'</td>'+
+      '<td>'+((k.imgUsage||0)+' / '+(k.videoUsage||0))+'</td>'+
+      '<td>'+new Date(k.createdAt||Date.now()).toLocaleDateString('fr-FR')+'</td>'+
+      '<td>'+(k.active?'ON':'OFF')+'</td>'+
+      '<td><button class="btn ghost small" data-del-key="'+k.id+'" style="width:auto;margin:0">✕</button></td>'+
+    '</tr>'
+  ).join('');
+  tbody.querySelectorAll('[data-del-key]').forEach(btn=>{
+    btn.addEventListener('click', async ()=>{
+      if(!confirm('Supprimer cette clé ?')) return;
+      await dbDelete('keys', btn.dataset.delKey);
+      state.keys = state.keys.filter(x=>String(x.id) !== btn.dataset.delKey);
+      renderAll();
+    });
+  });
+}
+
+function renderReferencePreview(){
+  const drop = $('ref-drop');
+  if(!drop) return;
+  if(state.reference){
+    drop.classList.add('has-image');
+    drop.innerHTML = '<div class="ref-preview"><img src="'+esc(state.reference)+'" alt="Référence"><button type="button" class="ref-remove" id="ref-remove">✕</button></div>';
+    const rm = drop.querySelector('#ref-remove');
+    if(rm) rm.addEventListener('click', e=>{
+      e.stopPropagation();
+      state.reference = null;
+      saveSessionData(); renderReferencePreview(); updateButtons();
+    });
+  }else{
+    drop.classList.remove('has-image');
+    drop.innerHTML = '<input type="file" accept="image/*" id="ref-input"><div class="ref-icon">◯</div><div class="ref-text"><strong>Choisir une image</strong>JPG, PNG, WebP — un seul clic pour tout lancer.</div>';
+    bindRefInput();
+  }
+}
+function bindRefInput(){
+  const inp = $('ref-input'); if(!inp) return;
+  inp.addEventListener('change', async e=>{
+    const f = e.target.files && e.target.files[0];
+    if(!f) return;
+    if(!f.type.startsWith('image/')){ toast('Fichier non image','err'); return }
+    try{
+      const raw = await fileToDataUri(f);
+      const comp = await compressDataUri(raw, 1280);
+      state.reference = comp;
+      await saveSessionData();
+      renderReferencePreview(); updateButtons();
+      toast('Image prête','ok');
+    }catch(e){ toast('Erreur','err') }
+  });
+}
+
+function renderCategorySelect(){
+  const sel = $('category-select');
+  if(!sel) return;
+  sel.innerHTML = state.categories.map(c=>'<option value="'+c.id+'">'+esc(c.label)+'</option>').join('');
+  sel.value = state.lastCategory || (state.categories[0]||{}).id || '';
+  sel.addEventListener('change', ()=>{
+    state.lastCategory = sel.value;
+    saveSessionData();
+    updateCatInfo();
+  });
+  updateCatInfo();
+}
+function updateCatInfo(){
+  const info = $('cat-info'); const sel = $('category-select');
+  if(!info || !sel) return;
+  const cat = state.categories.find(c=>c.id === sel.value);
+  const used = (state.styleLibrary[sel.value]||[]).length;
+  info.textContent = used + ' noms déjà utilisés dans cette catégorie. L\'IA ajoutera 20 noms inédits (sans doublon).';
+}
+
+function renderImages(){
+  const grid = $('image-grid');
+  const empty = $('images-empty');
+  const genBar = $('gen-bar');
+  if(!grid) return;
+  if(state.images.length === 0){
+    grid.innerHTML = ''; if(empty) empty.style.display = 'block';
+    if(genBar) genBar.style.display = 'none';
+    updateImagesCount(); return;
+  }
+  if(empty) empty.style.display = 'none';
+  if(genBar) genBar.style.display = 'flex';
+
+  let html = '';
+  state.images.forEach(img=>{
+    html += renderImageCard(img);
+    if(state.variantsByImage[img.id] && ['loading','ready','error'].indexOf(state.variantsByImage[img.id].status) !== -1){
+      html += renderVariantsRow(img, state.variantsByImage[img.id]);
+    }
+  });
+  grid.innerHTML = html;
+
+  grid.querySelectorAll('.image-card').forEach(card=>{
+    const imgId = parseInt(card.dataset.imgId, 10);
+    const check = card.querySelector('[data-check-id]');
+    if(check) check.addEventListener('click', e=>{ e.stopPropagation(); toggleFilmSelection(imgId) });
+    card.querySelectorAll('button[data-act]').forEach(btn=>{
+      btn.addEventListener('click', e=>{
+        e.stopPropagation();
+        const img = state.images.find(x=>x.id === imgId);
+        if(!img) return;
+        const act = btn.dataset.act;
+        if(act === 'prompt') openPromptModal(img.label, img.prompt);
+        else if(act === 'download' && img.url) downloadUrl(img.url, 'studio-'+img.id+'.jpg');
+        else if(act === 'variants') generate5Variants(imgId);
+        else if(act === 'star') toggleSaveStyleFromImage(imgId);
+      });
+    });
+  });
+  grid.querySelectorAll('[data-vr-id]').forEach(el=>{
+    const parentId = parseInt(el.dataset.parentId, 10);
+    const vrId = parseInt(el.dataset.vrId, 10);
+    const entry = state.variantsByImage[parentId];
+    if(!entry) return;
+    const plan = entry.plans.find(p=>p.id === vrId);
+    if(!plan) return;
+    const act = el.dataset.vrAct;
+    if(act === 'prompt') el.addEventListener('click', e=>{ e.stopPropagation(); openPromptModal(plan.label, plan.prompt) });
+    else if(act === 'download') el.addEventListener('click', e=>{ e.stopPropagation(); if(plan.url) downloadUrl(plan.url, 'variant-'+parentId+'-'+vrId+'.jpg') });
+    else if(act === 'star') el.addEventListener('click', e=>{ e.stopPropagation(); toggleSaveStyleFromVariant(parentId, vrId) });
+  });
+  grid.querySelectorAll('[data-vr-panel]').forEach(el=>{
+    el.addEventListener('click', e=>{
+      e.stopPropagation();
+      const parentId = parseInt(el.dataset.parentId, 10);
+      const act = el.dataset.vrPanel;
+      if(act === 'close'){ delete state.variantsByImage[parentId]; saveSessionData(); renderImages() }
+      else if(act === 'regen'){ delete state.variantsByImage[parentId]; generate5Variants(parentId) }
+      else if(act === 'film'){ startFilmFromVariants(parentId) }
+    });
+  });
+  updateImagesCount();
+}
+function renderImageCard(img){
+  let thumbInner = '';
+  if(img.status === 'loading') thumbInner = '<div class="placeholder">⏳ Génération…</div>';
+  else if(img.status === 'error') thumbInner = '<div class="placeholder err">✕ '+esc((img.error||'').slice(0,40))+'</div>';
+  else thumbInner = '<img src="'+esc(img.url)+'" alt="" loading="lazy" referrerpolicy="no-referrer">';
+
+  const cls = img.kind === 'perfect' ? 'perfect' : (img.kind === 'complementary' ? 'complementary' : (img.kind === 'extended' ? 'extended' : (img.kind === 'variant' ? 'variant' : 'reconstruct')));
+  const txt = img.kind === 'perfect' ? 'Parfaite' : (img.kind === 'complementary' ? 'Compl.' : (img.kind === 'extended' ? 'Étendu' : (img.kind === 'variant' ? 'Plan' : 'Prompt')));
+  const isSel = state.filmSelection.indexOf(img.id) !== -1;
+  const isSaved = !!img.savedAsStyle;
+  const isDone = img.status === 'done';
+  const cardCls = 'image-card'+(isSel?' selected-for-film':'')+(isSaved?' saved-as-style':'')+(img.status==='loading'?' loading':'')+(img.status==='error'?' error':'');
+
+  return '<div class="'+cardCls+'" data-img-id="'+img.id+'">'+
+    '<div class="thumb">'+
+      '<div class="check'+(isSel?' on':'')+'" data-check-id="'+img.id+'" title="Ajouter au film">'+
+        '<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>'+
+      '</div>'+
+      thumbInner+
+      '<div class="kind-badge '+cls+'">'+txt+'</div>'+
+      (isSaved?'<div class="star-badge">★</div>':'')+
+    '</div>'+
+    '<div class="cap"><span class="cap-lbl">'+esc(img.label||'')+'</span><span class="cap-key">'+(img.keyLast4||'')+'</span></div>'+
+    '<div class="acts">'+
+      '<button type="button" data-act="prompt" data-img-id="'+img.id+'">📝</button>'+
+      '<button type="button" data-act="download" data-img-id="'+img.id+'" '+(isDone?'':'disabled')+'>⬇</button>'+
+      '<button type="button" data-act="variants" data-img-id="'+img.id+'" '+(isDone?'':'disabled')+'>🎬 5 var</button>'+
+      '<button type="button" class="star-btn'+(isSaved?' on':'')+'" data-act="star" data-img-id="'+img.id+'">'+(isSaved?'★':'☆')+'</button>'+
+    '</div>'+
+  '</div>';
+}
+function renderVariantsRow(parentImg, entry){
+  const plans = entry.plans || [];
+  let inner = '';
+  if(entry.status === 'loading' && plans.length === 0){
+    inner = '<div style="font-size:.7rem;color:#0a7a3e;padding:.5rem;text-align:center;font-family:ui-monospace,monospace">⏳ Préparation des 5 variantes…</div>';
+  }else if(entry.status === 'error' && plans.length === 0){
+    inner = '<div style="font-size:.7rem;color:#c00;padding:.5rem;text-align:center;font-family:ui-monospace,monospace">✕ '+esc(entry.error||'Erreur')+'</div>';
+  }else if(plans.length > 0){
+    inner = '<div class="vr-grid">';
+    inner += plans.map(plan=>{
+      if(plan.status === 'loading') return '<div class="vr-card loading"></div>';
+      if(plan.status === 'error') return '<div class="vr-card error"><div class="thumb"><div class="vr-ph err">✕</div></div><div class="cap">'+esc((plan.label||'').slice(0,20))+'</div></div>';
+      const isSaved = !!plan.savedAsStyle;
+      return '<div class="vr-card">'+
+        '<div class="thumb"><img src="'+esc(plan.url)+'" alt="" loading="lazy" referrerpolicy="no-referrer">'+(isSaved?'<div class="star-badge">★</div>':'')+'</div>'+
+        '<div class="cap">'+esc(plan.label||'')+'</div>'+
+        '<div class="vr-acts">'+
+          '<button type="button" data-vr-act="prompt" data-parent-id="'+parentImg.id+'" data-vr-id="'+plan.id+'">📝</button>'+
+          '<button type="button" data-vr-act="download" data-parent-id="'+parentImg.id+'" data-vr-id="'+plan.id+'">⬇</button>'+
+          '<button type="button" data-vr-act="star" data-parent-id="'+parentImg.id+'" data-vr-id="'+plan.id+'">'+(isSaved?'★':'☆')+'</button>'+
+        '</div>'+
+      '</div>';
+    }).join('');
+    inner += '</div>';
+  }
+  return '<div class="variants-row">'+
+    '<div class="vr-title"><span class="vr-lbl">🎬 5 variantes · même style verrouillé</span><span class="vr-source">issus de : '+esc(parentImg.label||'')+'</span></div>'+
+    '<div class="vr-actions">'+
+      '<button type="button" class="btn small secondary" data-vr-panel="regen" data-parent-id="'+parentImg.id+'">↺ Régénérer</button>'+
+      '<button type="button" class="btn small" data-vr-panel="film" data-parent-id="'+parentImg.id+'">🎬 Faire un film avec ces 5 variantes</button>'+
+      '<button type="button" class="btn small ghost" data-vr-panel="close" data-parent-id="'+parentImg.id+'">✕ Fermer</button>'+
+    '</div>'+
+    inner+
+  '</div>';
+}
+function updateImagesCount(){
+  const b = $('images-count-badge'); if(!b) return;
+  const d = state.images.filter(i=>i.status==='done').length;
+  b.textContent = d+' / '+state.images.length;
+}
+
+function renderSavedStyles(){
+  const empty = $('saved-styles-empty');
+  const cont = $('saved-styles-container');
+  const list = $('saved-styles-list');
+  const count = $('saved-count');
+  if(count) count.textContent = state.savedStyles.length;
+  if(state.savedStyles.length === 0){
+    if(empty) empty.style.display = 'block';
+    if(cont) cont.style.display = 'none';
+    return;
+  }
+  if(empty) empty.style.display = 'none';
+  if(cont) cont.style.display = 'block';
+  if(!list) return;
+  list.innerHTML = state.savedStyles.map(s=>{
+    const sel = !!state.savedStyleSelected[s.id];
+    const fromSess = state.sessionsIndex.find(x=>x.id===s.sessionId)?.name || '?';
+    return '<div class="saved-style-card'+(sel?' selected':'')+'">'+
+      '<div class="ss-head">'+
+        '<span class="ss-label">⭐ '+esc(s.label)+'</span>'+
+        '<button type="button" class="ss-toggle'+(sel?' on':'')+'" data-tg-style="'+s.id+'"></button>'+
+      '</div>'+
+      '<div class="ss-cat">'+esc(fromSess)+' · '+new Date(s.savedAt).toLocaleDateString('fr-FR')+'</div>'+
+      '<div class="ss-prompt">'+esc((s.prompt||'').slice(0,150))+'</div>'+
+      '<div class="ss-actions">'+
+        '<button type="button" data-vw-style="'+s.id+'">📝</button>'+
+        '<button type="button" data-rm-style="'+s.id+'">✕</button>'+
+      '</div>'+
+    '</div>';
+  }).join('');
+  list.querySelectorAll('[data-tg-style]').forEach(el=>el.addEventListener('click', e=>{ e.stopPropagation(); state.savedStyleSelected[el.dataset.tgStyle] = !state.savedStyleSelected[el.dataset.tgStyle]; renderSavedStyles() }));
+  list.querySelectorAll('[data-rm-style]').forEach(el=>el.addEventListener('click', async e=>{
+    e.stopPropagation();
+    if(!confirm('Supprimer ce style ?')) return;
+    const id = el.dataset.rmStyle;
+    await dbDelete('savedStyles', id);
+    state.savedStyles = state.savedStyles.filter(x=>x.id !== id);
+    renderAll();
+  }));
+  list.querySelectorAll('[data-vw-style]').forEach(el=>el.addEventListener('click', e=>{
+    e.stopPropagation();
+    const s = state.savedStyles.find(x=>x.id === el.dataset.vwStyle);
+    if(s) openPromptModal(s.label, s.prompt);
+  }));
+  updateSavedGenerateBtn();
+}
+function updateSavedGenerateBtn(){
+  const btn = $('saved-generate-btn'); if(!btn) return;
+  const ids = Object.keys(state.savedStyleSelected).filter(k=>state.savedStyleSelected[k]);
+  if(ids.length === 0){ btn.disabled = true; btn.textContent = '🎨 Sélectionnez au moins 1 style'; return }
+  btn.disabled = state.isGeneratingFromSaved || state.isRunning;
+  btn.textContent = state.isGeneratingFromSaved ? '⏳ Génération…' : ('🎨 Appliquer mes favoris ('+ids.length+')');
+}
+
+function renderFilmSection(){
+  const empty = $('film-selection-empty');
+  const sel = $('film-selection');
+  const thumbs = $('film-thumbs');
+  const fv = $('film-videos');
+  const cnt = $('film-count');
+  if(!empty || !sel) return;
+  const selected = state.filmSelection.map(id=>state.images.find(i=>i.id === id)).filter(Boolean);
+  if(cnt) cnt.textContent = selected.length+' sélectionnée(s)';
+  if(selected.length === 0){
+    empty.style.display = 'block';
+    sel.style.display = 'none';
+  }else{
+    empty.style.display = 'none';
+    sel.style.display = 'block';
+    thumbs.innerHTML = selected.map(i=>'<div class="film-thumb"><img src="'+esc(i.url)+'" alt=""><button class="rm" type="button" data-rm="'+i.id+'">✕</button></div>').join('');
+    thumbs.querySelectorAll('[data-rm]').forEach(b=>b.addEventListener('click', ()=>toggleFilmSelection(parseInt(b.dataset.rm,10))));
+  }
+  if(!state.film || !Array.isArray(state.film.videos) || state.film.videos.length === 0){
+    fv.innerHTML = '';
+  }else{
+    fv.innerHTML = state.film.videos.map((v,i)=>{
+      const img = state.images.find(x=>x.id === v.imgId);
+      if(!img) return '';
+      let body = '';
+      if(v.status==='done' && v.url) body = '<div class="fv-video"><video src="'+esc(v.url)+'" controls playsinline preload="metadata"></video></div>';
+      else if(v.status==='loading') body = '<div class="fv-video"><div class="fv-load">⏳ '+(v.progress||'Génération…')+'</div></div>';
+      else if(v.status==='error') body = '<div class="fv-video"><div class="fv-load" style="color:#c00">✕ '+(v.error||'Erreur')+'</div></div>';
+      else body = '<div class="fv-video"><div class="fv-load">En attente…</div></div>';
+      return '<div class="film-video-item"><div class="fv-head">🎥 Vidéo '+(i+1)+' · '+esc(img.label)+'</div><div class="fv-body">'+body+'<div class="fv-text">'+(v.scene?'<div>'+esc(v.scene)+'</div>':'')+(v.dialogue_fr?'<div class="fv-dialogue">« '+esc(v.dialogue_fr)+' »</div>':'')+(v.keyLast4?'<div class="fv-meta">clé '+esc(v.keyLast4)+'</div>':'')+'</div></div></div>';
+    }).join('');
+  }
+}
+
+function renderVideoLibrary(){
+  const list = $('videolib-list');
+  const empty = $('videolib-empty');
+  const c = $('videolib-count');
+  if(c) c.textContent = state.videosDB.length;
+  if(!list) return;
+  if(state.videosDB.length === 0){ list.innerHTML=''; if(empty) empty.style.display='block'; return }
+  if(empty) empty.style.display = 'none';
+  list.innerHTML = state.videosDB.map(v=>{
+    const fromSess = state.sessionsIndex.find(x=>x.id===v.sessionId)?.name || '?';
+    return '<div class="video-lib-card">'+
+      '<video src="'+esc(v.url)+'" controls playsinline preload="metadata"></video>'+
+      '<div class="vlb-cap"><div class="vlb-t">'+esc(v.label||'')+'</div><div class="vlb-s">'+esc(fromSess)+' · '+new Date(v.createdAt).toLocaleDateString('fr-FR')+'</div></div>'+
+      '<div class="vlb-actions">'+
+        '<button type="button" data-vlb-dl="'+v.id+'">⬇</button>'+
+        '<button type="button" data-vlb-rm="'+v.id+'">✕</button>'+
+      '</div>'+
+    '</div>';
+  }).join('');
+  list.querySelectorAll('[data-vlb-dl]').forEach(b=>b.addEventListener('click', ()=>{ const v=state.videosDB.find(x=>x.id===b.dataset.vlbDl); if(v) downloadUrl(v.url, 'video-'+v.id+'.mp4') }));
+  list.querySelectorAll('[data-vlb-rm]').forEach(b=>b.addEventListener('click', async ()=>{
+    if(!confirm('Supprimer cette vidéo ?')) return;
+    await dbDelete('videosDB', b.dataset.vlbRm);
+    state.videosDB = state.videosDB.filter(x=>x.id !== b.dataset.vlbRm);
+    renderVideoLibrary(); renderPills();
+  }));
+}
+function renderPendingVideos(){
+  const list = $('pending-list');
+  const empty = $('pending-empty');
+  const c = $('pending-count');
+  if(c) c.textContent = state.pendingVideos.length;
+  if(!list) return;
+  if(state.pendingVideos.length === 0){ list.innerHTML=''; if(empty) empty.style.display='block'; return }
+  if(empty) empty.style.display = 'none';
+  list.innerHTML = state.pendingVideos.map(p=>
+    '<div class="video-lib-card pending">'+
+      '<div style="padding:1rem;text-align:center;color:#b8860b;font-family:ui-monospace,monospace;font-size:.7rem">⏳ En cours</div>'+
+      '<div class="vlb-cap"><div class="vlb-t">'+esc(p.label||'')+'</div><div class="vlb-s">Lancée '+new Date(p.createdAt).toLocaleTimeString('fr-FR')+'</div></div>'+
+      '<div class="vlb-actions">'+
+        '<button type="button" data-pnd-resume="'+p.id+'">↺ Reprendre</button>'+
+        '<button type="button" data-pnd-rm="'+p.id+'">✕</button>'+
+      '</div>'+
+    '</div>'
+  ).join('');
+  list.querySelectorAll('[data-pnd-resume]').forEach(b=>b.addEventListener('click', ()=>resumeOnePending(b.dataset.pndResume)));
+  list.querySelectorAll('[data-pnd-rm]').forEach(b=>b.addEventListener('click', async ()=>{
+    if(!confirm('Retirer ce suivi ?')) return;
+    await dbDelete('pendingVideos', b.dataset.pndRm);
+    state.pendingVideos = state.pendingVideos.filter(x=>x.id !== b.dataset.pndRm);
+    renderPendingVideos(); renderPills();
+  }));
+}
+
+function renderAdminStats(){
+  const c = $('stats-content'); const k = $('stats-keys');
+  if(!c) return;
+  c.innerHTML = [
+    ['Sessions', state.sessionsIndex.length],
+    ['Clés API', state.keys.length],
+    ['Images (session courante)', state.images.length],
+    ['Variantes', Object.values(state.variantsByImage).reduce((s,e)=>s+(e.plans?.length||0),0)],
+    ['Styles favoris', state.savedStyles.length],
+    ['Vidéos (bibliothèque)', state.videosDB.length],
+    ['Vidéos en cours', state.pendingVideos.length],
+    ['Catégories', state.categories.length],
+    ['Messages chat', state.chatHistory.length]
+  ].map(([a,b])=>'<div class="admin-stat"><span class="as-k">'+a+'</span><span class="as-v">'+b+'</span></div>').join('');
+
+  if(k){
+    const totalImg = state.keys.reduce((s,x)=>s+(x.imgUsage||0),0);
+    const totalVid = state.keys.reduce((s,x)=>s+(x.videoUsage||0),0);
+    k.innerHTML = [
+      ['Utilisations image', totalImg],
+      ['Utilisations vidéo', totalVid],
+      ['Clés actives', state.keys.filter(x=>x.active).length],
+      ['Clés désactivées', state.keys.filter(x=>!x.active).length]
+    ].map(([a,b])=>'<div class="admin-stat"><span class="as-k">'+a+'</span><span class="as-v">'+b+'</span></div>').join('');
+  }
+}
+
+function renderCategoriesList(){
+  const el = $('categories-list');
+  const c = $('cat-count-badge');
+  if(c) c.textContent = state.categories.length;
+  if(!el) return;
+  el.innerHTML = state.categories.map((cat,i)=>
+    '<div style="display:flex;justify-content:space-between;align-items:center;padding:.4rem .5rem;border-bottom:1px solid #f3f3f3;font-size:.72rem">'+
+      '<span style="flex:1;color:#111">'+esc(cat.label)+'</span>'+
+      '<button class="btn ghost small" data-rm-cat="'+i+'" style="width:auto;margin:0;padding:.2rem .5rem">✕</button>'+
+    '</div>'
+  ).join('');
+  el.querySelectorAll('[data-rm-cat]').forEach(b=>b.addEventListener('click', ()=>{
+    const idx = parseInt(b.dataset.rmCat, 10);
+    state.categories.splice(idx, 1);
+    saveCategories();
+    renderCategoriesList();
+    renderCategorySelect();
+  }));
+}
+
+function renderPromptsAdmin(){
+  if($('prompt-analysis')) $('prompt-analysis').value = state.config.prompt_analysis || DEFAULT_PROMPTS.analysis;
+  if($('prompt-styles')) $('prompt-styles').value = state.config.prompt_styles || DEFAULT_PROMPTS.styles;
+  if($('prompt-variants')) $('prompt-variants').value = state.config.prompt_variants || DEFAULT_PROMPTS.variants;
+  if($('prompt-film')) $('prompt-film').value = state.config.prompt_film || DEFAULT_PROMPTS.film;
+}
+
+function updateButtons(){
+  const hasRef = !!state.reference;
+  const hasKey = state.keys.filter(k=>k.active).length > 0;
+  const anyVarBusy = Object.values(state.isGeneratingVariants).some(x=>x);
+  const busy = state.isRunning || state.isAnalyzing || state.isExtending || state.isGeneratingFilm || anyVarBusy;
+  const lb = $('launch-btn');
+  if(lb){
+    lb.disabled = !hasRef || !hasKey || busy;
+    lb.textContent = state.isAnalyzing ? '⏳ Analyse…' : (state.isRunning ? '⏳ Génération…' : '🚀 Lancer l\'analyse et les images');
+  }
+  const mb = $('more-styles-btn');
+  if(mb){
+    const hasImg = state.images.some(i=>i.status==='done');
+    mb.disabled = !hasKey || state.isExtending || !hasImg;
+    mb.textContent = state.isExtending ? '⏳…' : '+ 20 images';
+  }
+  const fb = $('film-create-btn');
+  if(fb){
+    fb.disabled = state.filmSelection.length === 0 || !hasKey || busy;
+    fb.textContent = state.isGeneratingFilm ? '⏳ Film…' : '🎬 Inventer un film';
+  }
+  updateSavedGenerateBtn();
+}
+
+// ==================================================================
+// SAVE CATEGORIES / PROMPTS
+// ==================================================================
+async function saveCategories(){
+  try{ await dbPut('config', {key:'categories', value: state.categories}) }catch(e){}
+}
+async function savePrompts(){
+  try{
+    await dbPut('config', {key:'prompt_analysis', value: $('prompt-analysis').value});
+    await dbPut('config', {key:'prompt_styles', value: $('prompt-styles').value});
+    await dbPut('config', {key:'prompt_variants', value: $('prompt-variants').value});
+    await dbPut('config', {key:'prompt_film', value: $('prompt-film').value});
+    state.config.prompt_analysis = $('prompt-analysis').value;
+    state.config.prompt_styles = $('prompt-styles').value;
+    state.config.prompt_variants = $('prompt-variants').value;
+    state.config.prompt_film = $('prompt-film').value;
+    toast('Prompts enregistrés','ok');
+  }catch(e){ toast('Erreur','err') }
+}
+
+// ==================================================================
+// LAUNCH
+// ==================================================================
+async function launchEverything(){
+  if(!state.reference){ toast('Ajoutez une image','err'); return }
+  if(state.keys.filter(k=>k.active).length === 0){ toast('Ajoutez une clé API','err'); return }
+  if(state.isAnalyzing || state.isRunning){ toast('Déjà en cours','warn'); return }
+
+  state.isAnalyzing = true;
+  updateButtons();
+  showProgress('Analyse de l\'image…','');
+  setProgress(3);
+  $('launch-status-line').classList.remove('ok');
+  $('launch-status-text').textContent = 'Analyse en cours…';
+
+  try{
+    const keyObj = await acquireKey('video');
+    const sys = state.config.prompt_analysis || DEFAULT_PROMPTS.analysis;
+    const userText = 'Analyse cette image. Réponds en JSON strict.';
+
+    let content = null, attempts = 0;
+    while(!content && attempts < 3){
+      attempts++;
+      try{ content = await callVision(sys, userText, state.reference, keyObj, 5500) }
+      catch(e){
+        if(e.status===429){ await sleep(15000); continue }
+        if(attempts>=3) throw e;
+        await sleep(2000);
+      }
+    }
+    if(!content) throw new Error('Pas de contenu');
+    const parsed = parseJson(content);
+    if(!parsed || !parsed.perfect || !Array.isArray(parsed.styles)) throw new Error('JSON invalide');
+    parsed.styles = parsed.styles.slice(0, 19);
+    while(parsed.styles.length < 19) parsed.styles.push({label:'Style '+(parsed.styles.length+1), prompt:'keep the exact same person, high detail'});
+    parsed.reconstructions = (parsed.reconstructions || []).slice(0, 3);
+    while(parsed.reconstructions.length < 3) parsed.reconstructions.push({label:'Reconstruction '+(parsed.reconstructions.length+1), prompt:'text-only prompt to recreate the described scene'});
+
+    state.analysis = parsed;
+    await saveSessionData();
+    $('launch-status-line').classList.add('ok');
+    $('launch-status-text').textContent = '✓ Analyse OK · génération des images…';
+
+    // Build tasks
+    const tasks = [];
+    tasks.push({kind:'perfect', label: parsed.perfect.label || 'Copie parfaite', prompt: parsed.perfect.prompt, referenceUri: state.reference});
+    parsed.reconstructions.forEach((r,i)=>tasks.push({kind:'reconstruct', label: r.label || ('Reconstruction #'+(i+1)), prompt: r.prompt, referenceUri: null}));
+    parsed.styles.forEach(s=>tasks.push({kind:'style', label:s.label, prompt:s.prompt, referenceUri: state.reference}));
+    tasks.push({kind:'complementary', label: parsed.complementary.label || 'Complémentaire', prompt: parsed.complementary.prompt, referenceUri: state.reference});
+
+    state.isAnalyzing = false;
+    state.images = [];
+    state.variantsByImage = {};
+    renderImages();
+
+    await runBatch(tasks, 'Génération de '+tasks.length+' images…');
+    $('launch-status-text').textContent = '✓ Terminé. Explorez avec les catégories ci-dessous.';
+    setProgress(100);
+    await sleep(500);
+    hideProgress();
+    await saveSessionData();
+  }catch(e){
+    log('error','ANALYSE', e.message);
+    $('launch-status-line').classList.remove('ok');
+    $('launch-status-text').textContent = '✕ '+e.message.slice(0,80);
+    toast('Échec : '+e.message.slice(0,50),'err');
+    hideProgress();
+  }
+  state.isAnalyzing = false;
+  state.isRunning = false;
+  updateButtons();
+}
+
+async function runBatch(tasks, label){
+  if(state.isRunning){ toast('Déjà en cours','warn'); return }
+  if(state.keys.filter(k=>k.active).length === 0){ toast('Ajoutez une clé API','err'); return }
+
+  state.isRunning = true;
+  state.stopRequested = false;
+  updateButtons();
+  showProgress(label,'');
+  setProgress(0);
+  await activateWakeLock();
+
+  const newImgs = tasks.map(t=>({
+    id: nextImgId++,
+    kind: t.kind,
+    label: t.label,
+    prompt: t.prompt,
+    status: 'loading',
+    url: null,
+    keyLast4: '',
+    error: null,
+    sourceStyle: t.sourceStyle || null,
+    sourceImageId: t.sourceImageId || null,
+    referenceUri: t.referenceUri !== undefined ? t.referenceUri : state.reference,
+    savedAsStyle: false
+  }));
+  newImgs.forEach(i=>state.images.push(i));
+  renderImages();
+
+  const startTime = Date.now();
+  const workers = Math.min(Math.max(1, state.keys.filter(k=>k.active).length), tasks.length);
+  const q = newImgs.slice();
+  let done = 0;
+
+  const workerFn = async ()=>{
+    while(q.length > 0 && !state.stopRequested){
+      const img = q.shift(); if(!img) break;
+      let att = 0; const max = Math.max(5, state.keys.length*2); let ok = false;
+      while(att < max && !state.stopRequested && !ok){
+        att++;
+        let k = null;
+        try{ k = await acquireKey('image') }catch(e){ img.status='error'; img.error='Aucune clé'; renderImages(); return }
+        img.keyLast4 = k.key.slice(-4);
+        renderImages();
+        try{
+          const url = await callImage(img.prompt, img.referenceUri, k);
+          img.status = 'done'; img.url = url; ok = true; done++;
+          renderImages();
+          await saveSessionData();
+          updateProgBatch(startTime, tasks.length, done);
+        }catch(e){
+          if(e.message === 'Arrêt demandé'){ img.status='error'; img.error='Arrêté'; renderImages(); return }
+          if(e.status === 429) continue;
+          if(att >= max){ img.status='error'; img.error=(e.message||'Erreur').slice(0,50); done++; renderImages(); updateProgBatch(startTime, tasks.length, done) }
+          else await sleep(700);
+        }
+      }
+    }
+  };
+  const ws = []; for(let i=0; i<workers; i++) ws.push(workerFn());
+  await Promise.all(ws);
+
+  state.isRunning = false;
+  state.stopRequested = false;
+  updateButtons();
+  await deactivateWakeLock();
+  const succ = newImgs.filter(i=>i.status==='done').length;
+  hideProgress();
+  log('success','IMAGES', succ+'/'+tasks.length);
+  toast(succ+'/'+tasks.length+' images','ok');
+  await saveSessionData();
+}
+function updateProgBatch(startTime, total, done){
+  setProgress((done/total)*100);
+  showProgress(done+' / '+total, '');
+  if(done > 0){
+    const el = (Date.now()-startTime)/1000;
+    const rate = done/el;
+    if(rate > 0) $('progress-eta').textContent = 'ETA ≈ '+fmtEta((total-done)/rate);
+  }
+}
+
+async function extendStyles(){
+  if(state.isExtending){ toast('En cours…','warn'); return }
+  if(state.keys.filter(k=>k.active).length === 0){ toast('Ajoutez une clé','err'); return }
+
+  state.isExtending = true;
+  updateButtons();
+  showProgress('Recherche de 20 nouveaux noms…','');
+  setProgress(5);
+
+  try{
+    const sel = $('category-select');
+    const catId = sel ? sel.value : '';
+    const cat = state.categories.find(c=>c.id === catId);
+    const smartRequest = ($('smart-request')?.value || '').trim();
+
+    // Used labels
+    let usedLabels = [];
+    if(cat) usedLabels = (state.styleLibrary[cat.id] || []).slice();
+    // Also merge all from same session for global dedup
+    Object.values(state.styleLibrary).forEach(arr=>{ if(Array.isArray(arr)) usedLabels = usedLabels.concat(arr) });
+    if(state.analysis?.styles) state.analysis.styles.forEach(s=>usedLabels.push(s.label));
+    if(state.analysis?.perfect) usedLabels.push(state.analysis.perfect.label);
+    if(state.analysis?.complementary) usedLabels.push(state.analysis.complementary.label);
+    const usedUnique = Array.from(new Set(usedLabels.filter(Boolean)));
+
+    const keyObj = await acquireKey('video');
+    const sys = state.config.prompt_styles || DEFAULT_PROMPTS.styles;
+    const catLine = cat ? ('CATÉGORIE : '+cat.label) : '(aucune catégorie)';
+    const smartLine = smartRequest ? ('DEMANDE LIBRE DE L\'UTILISATEUR : '+smartRequest) : '';
+    const userText = [
+      catLine,
+      smartLine,
+      '',
+      'NOMS DÉJÀ UTILISÉS (à éviter absolument) :',
+      usedUnique.length > 0 ? usedUnique.map(l=>'- '+l).join('\n') : '(aucun)',
+      '',
+      'Propose 20 noms PRÉCIS et différents. Sois CRÉATIF. Interdiction ABSOLUE de répéter un nom déjà listé.',
+      'Retourne UNIQUEMENT : { "styles": [ { "label":"...", "prompt":"..." }, ... 20 ] }'
+    ].filter(Boolean).join('\n');
+
+    setProgress(20);
+    let content = null, att = 0;
+    while(!content && att < 3){
+      att++;
+      try{ content = await callText(sys, userText, keyObj, 5000, 0.9) }
+      catch(e){
+        if(e.status===429){ await sleep(15000); continue }
+        if(att>=3) throw e;
+        await sleep(2000);
+      }
+    }
+    setProgress(55);
+    const parsed = parseJson(content);
+    if(!parsed || !Array.isArray(parsed.styles)) throw new Error('JSON invalide');
+    const existingLower = new Set(usedUnique.map(l=>l.toLowerCase()));
+    const newOnes = [];
+    for(const s of parsed.styles){
+      if(!s.label || !s.prompt) continue;
+      const lo = s.label.toLowerCase();
+      if(existingLower.has(lo)) continue;
+      existingLower.add(lo);
+      newOnes.push({label:s.label, prompt:s.prompt});
+      if(newOnes.length >= 20) break;
+    }
+    if(newOnes.length === 0) throw new Error('Aucun style inédit');
+
+    const libKey = smartRequest ? ('custom_' + Date.now()) : (cat ? cat.id : 'custom');
+    if(!state.styleLibrary[libKey]) state.styleLibrary[libKey] = [];
+    newOnes.forEach(s=>state.styleLibrary[libKey].push(s.label));
+    await saveSessionData();
+
+    const catShort = (cat?.label || 'Custom').split('—')[0].split('(')[0].trim().slice(0, 28);
+    const tasks = newOnes.map(s=>({kind:'extended', label:'['+catShort+'] '+s.label, prompt:s.prompt, referenceUri: state.reference}));
+    state.isExtending = false;
+    updateButtons();
+    await runBatch(tasks, 'Génération des '+newOnes.length+' images…');
+    if($('smart-request')) $('smart-request').value = '';
+    toast(newOnes.length+' nouveaux styles','ok');
+  }catch(e){
+    log('error','STYLES', e.message);
+    toast('Erreur : '+e.message.slice(0,50),'err');
+    hideProgress();
+  }finally{
+    state.isExtending = false;
+    updateButtons();
+    hideProgress();
+    await saveSessionData();
+  }
+}
+
+// ==================================================================
+// 5 VARIANTES
+// ==================================================================
+async function extractStyleDescriptor(img){
+  if(img.sourceStyle && img.sourceStyle.style_summary) return img.sourceStyle;
+  const k = await acquireKey('video');
+  const sys = 'Tu es un directeur artistique expert. Tu analyses une image et tu en extrais son STYLE VISUEL précis. Réponds en JSON strict.';
+  const userText = 'Image : '+img.label+'\nPrompt original :\n'+img.prompt+'\n\nRetourne ce JSON : { "medium":"...", "lighting":"...", "palette":"...", "composition":"...", "texture":"...", "mood":"...", "style_summary":"phrase anglaise qui RÉSUME ce style" }';
+  let content = null, att = 0;
+  while(!content && att < 3){
+    att++;
+    try{ content = await callVision(sys, userText, img.url, k, 2000) }
+    catch(e){ if(e.status===429){ await sleep(15000); continue } if(att>=3) throw e; await sleep(2000) }
+  }
+  const p = parseJson(content);
+  if(!p) throw new Error('Extraction impossible');
+  return {
+    medium: p.medium || 'same medium',
+    lighting: p.lighting || 'same lighting',
+    palette: p.palette || 'same palette',
+    composition: p.composition || 'same composition',
+    texture: p.texture || 'same texture',
+    mood: p.mood || 'same mood',
+    style_summary: p.style_summary || 'Same visual style as the reference image.'
+  };
+}
+function buildStyleLock(sd){
+  return [
+    'STYLE LOCK — DO NOT CHANGE THE STYLE.',
+    sd.style_summary,
+    'Medium: '+sd.medium,
+    'Lighting: '+sd.lighting,
+    'Palette: '+sd.palette,
+    'Composition: '+sd.composition,
+    'Texture: '+sd.texture,
+    'Mood: '+sd.mood,
+    'THE STYLE IS NON-NEGOTIABLE.'
+  ].join('\n');
+}
+
+async function generate5Variants(imgId){
+  if(state.isGeneratingVariants[imgId]){ toast('Déjà en cours','warn'); return }
+  const img = state.images.find(i=>i.id === imgId);
+  if(!img || img.status !== 'done') return;
+  if(state.keys.filter(k=>k.active).length === 0){ toast('Ajoutez une clé','err'); return }
+
+  state.isGeneratingVariants[imgId] = true;
+  state.variantsByImage[imgId] = {status:'loading', sourceLabel: img.label, plans: []};
+  renderImages();
+  showProgress('Extraction du style + variantes…','');
+  setProgress(5);
+
+  try{
+    let sd;
+    try{
+      sd = await extractStyleDescriptor(img);
+      img.sourceStyle = sd;
+      await saveSessionData();
+    }catch(e){
+      sd = {medium:'same', lighting:'same', palette:'same', composition:'same', texture:'same', mood:'same', style_summary:'Same visual style as the reference image.'};
+    }
+    setProgress(20);
+
+    const k = await acquireKey('video');
+    const sys = state.config.prompt_variants || DEFAULT_PROMPTS.variants;
+    const lock = buildStyleLock(sd);
+    const subject = state.analysis?.subject || 'the main character';
+    const userText = [
+      '╔══ STYLE À VERROUILLER ══╗',
+      lock,
+      '',
+      'Image : '+img.label,
+      'Personnage : '+subject,
+      '',
+      'Écris 5 prompts IMAGE-TO-IMAGE. Le style reste IDENTIQUE.',
+      '1. "Moi + partenaire" — personnage + NOUVEAU PARTENAIRE dans la même scène.',
+      '2. "Moi seul" — personnage SEUL dans un NOUVEAU décor.',
+      '3. "Nouveau personnage" — personnage DIFFÉRENT.',
+      '4. "Nouveau personnage en ville" — personnage DIFFÉRENT dans une VILLE.',
+      '5. "Nouveau personnage en action" — personnage DIFFÉRENT en ACTION avec VÉHICULE.',
+      '',
+      'Retourne : { "plans": [ { "label":"...", "prompt":"..." }, ... 5 ] }'
+    ].join('\n');
+
+    setProgress(35);
+    let content = null, att = 0;
+    while(!content && att < 3){
+      att++;
+      try{ content = await callVision(sys, userText, img.url, k, 3500) }
+      catch(e){ if(e.status===429){ await sleep(15000); continue } if(att>=3) throw e; await sleep(2000) }
+    }
+    setProgress(55);
+    const parsed = parseJson(content);
+    if(!parsed || !Array.isArray(parsed.plans)) throw new Error('Variantes invalides');
+    const plans = parsed.plans.slice(0,5);
+    while(plans.length < 5) plans.push({label:'Variante '+(plans.length+1), prompt:''});
+    const prefix = buildStyleLock(sd);
+    const withStyle = plans.map(p=>{
+      let pr = String(p.prompt||'').trim();
+      if(!(/STYLE LOCK/i.test(pr) && pr.indexOf(sd.style_summary.slice(0,40)) !== -1)) pr = prefix + '\n\nSCENE: ' + pr;
+      pr += '\n\nFINAL RULE: Reproduce EXACTLY the same style as the reference.';
+      return {label:p.label, prompt:pr};
+    });
+    setProgress(75);
+
+    const entries = withStyle.map(p=>({
+      id: nextVariantId++,
+      label: p.label,
+      prompt: p.prompt,
+      status: 'loading',
+      url: null,
+      keyLast4: '',
+      error: null,
+      savedAsStyle: false
+    }));
+    state.variantsByImage[imgId].plans = entries;
+    state.variantsByImage[imgId].status = 'ready';
+    renderImages();
+    await saveSessionData();
+
+    const workers = Math.min(Math.max(1, state.keys.filter(k=>k.active).length), entries.length);
+    const q = entries.slice();
+    let done = 0;
+
+    const worker = async ()=>{
+      while(q.length > 0 && !state.stopRequested){
+        const plan = q.shift(); if(!plan) break;
+        let att = 0; const max = Math.max(5, state.keys.length*2); let ok = false;
+        while(att < max && !state.stopRequested && !ok){
+          att++;
+          let kk = null;
+          try{ kk = await acquireKey('image') }catch(e){ plan.status='error'; plan.error='Aucune clé'; renderImages(); return }
+          plan.keyLast4 = kk.key.slice(-4);
+          renderImages();
+          try{
+            const url = await callImage(plan.prompt, img.url, kk);
+            plan.status = 'done'; plan.url = url; ok = true; done++;
+            renderImages();
+            await saveSessionData();
+            setProgress(75 + (done/entries.length)*25);
+          }catch(e){
+            if(e.message === 'Arrêt demandé'){ plan.status='error'; plan.error='Arrêté'; renderImages(); return }
+            if(e.status === 429) continue;
+            if(att >= max){ plan.status='error'; plan.error=(e.message||'Erreur').slice(0,40); done++; renderImages(); await saveSessionData() }
+            else await sleep(700);
+          }
+        }
+      }
+    };
+    const ws = []; for(let i=0; i<workers; i++) ws.push(worker());
+    await Promise.all(ws);
+
+    const succ = entries.filter(p=>p.status==='done').length;
+    log('success','VARIANTES', succ+'/'+entries.length);
+    toast(succ+' variantes ajoutées','ok');
+    setProgress(100);
+    await sleep(500);
+    hideProgress();
+  }catch(e){
+    log('error','VARIANTES', e.message);
+    if(state.variantsByImage[imgId]){
+      state.variantsByImage[imgId].status = 'error';
+      state.variantsByImage[imgId].error = e.message.slice(0,80);
+    }
+    renderImages();
+    toast('Échec variantes','err');
+    hideProgress();
+  }finally{
+    state.isGeneratingVariants[imgId] = false;
+    updateButtons();
+    await saveSessionData();
+  }
+}
+
+// ==================================================================
+// FILM FROM VARIANTS
+// ==================================================================
+async function startFilmFromVariants(parentImgId){
+  const entry = state.variantsByImage[parentImgId];
+  if(!entry || !Array.isArray(entry.plans)) { toast('Pas de variantes','err'); return }
+  const parentImg = state.images.find(i=>i.id === parentImgId);
+  if(!parentImg) return;
+  const variantIds = entry.plans.filter(p=>p.status==='done').map(p=>p.id);
+  if(variantIds.length === 0){ toast('Aucune variante prête','err'); return }
+
+  // Prepare film selection: parent + variants
+  const variantImgs = entry.plans.filter(p=>p.status==='done').map(p=>({
+    id: 'v_'+parentImgId+'_'+p.id,
+    label: p.label,
+    url: p.url,
+    prompt: p.prompt,
+    isVariant: true,
+    parentId: parentImgId
+  }));
+
+  // We build a temporary "film" object with the source images
+  const images = [parentImg].concat(variantImgs);
+
+  state.isGeneratingFilm = true;
+  state.film = {
+    status: 'analyzing',
+    story: '', title: '',
+    videos: images.map(i=>({imgId: i.id, label: i.label, imgUrl: i.url, status: 'pending', url: null, dialogue_fr:'', scene:'', keyLast4:'', error:null}))
+  };
+  await saveSessionData();
+  renderFilmSection();
+  showProgress('Écriture du scénario film…','');
+  setProgress(5);
+  await activateWakeLock();
+
+  try{
+    const k = await acquireKey('video');
+    const sys = state.config.prompt_film || DEFAULT_PROMPTS.film;
+    const list = images.map((img,i)=>'Plan '+(i+1)+' — '+img.label+'\nPrompt : '+(img.prompt||'').slice(0,400)).join('\n\n');
+    const userText = 'Voici '+images.length+' images qui formeront une scène de film.\n\n'+list+'\n\nÉcris une histoire collective. Chaque plan a UNE phrase de dialogue en FRANÇAIS (6-14 mots).\nRetourne : { "title":"...", "story":"...", "tone":"...", "videos":[ { "scene":"...", "dialogue_fr":"..." }, ... '+images.length+' ] }';
+
+    let content = null, att = 0;
+    while(!content && att < 3){
+      att++;
+      try{ content = await callText(sys, userText, k, 3500, 0.85) }
+      catch(e){ if(e.status===429){ await sleep(15000); continue } if(att>=3) throw e; await sleep(2000) }
+    }
+    setProgress(40);
+    const parsed = parseJson(content);
+    if(!parsed || !Array.isArray(parsed.videos)) throw new Error('Scénario invalide');
+    for(let i=0; i<state.film.videos.length; i++){
+      const v = state.film.videos[i];
+      const item = parsed.videos[i] || {};
+      v.scene = item.scene || '';
+      v.dialogue_fr = item.dialogue_fr || '';
+    }
+    state.film.title = parsed.title || 'Film';
+    state.film.story = parsed.story || '';
+    state.film.status = 'generating';
+    await saveSessionData();
+    renderFilmSection();
+    setProgress(50);
+
+    const workers = Math.min(Math.max(1, state.keys.filter(kk=>kk.active).length), state.film.videos.length);
+    const q = state.film.videos.slice();
+    let doneCount = 0;
+
+    const worker = async ()=>{
+      while(q.length > 0 && !state.stopRequested){
+        const v = q.shift(); if(!v) break;
+        let styleHint = '';
+        const srcImg = images.find(x=>String(x.id) === String(v.imgId));
+        if(srcImg?.prompt) styleHint = '\nVISUAL STYLE TO PRESERVE: '+(srcImg.prompt.slice(0,200));
+
+        const videoPrompt = [
+          'CINEMATIC FILM SHOT — '+(FILM_VIDEO_FRAMES/FILM_VIDEO_FPS).toFixed(1)+'S — PORTRAIT.',
+          'The provided image is the FIRST FRAME and visual REFERENCE.',
+          'Preserve the same character and same visual style.',
+          styleHint, '',
+          v.scene ? ('SCENE: '+v.scene) : '', '',
+          v.dialogue_fr ? ('SPOKEN DIALOGUE (FRENCH, lips in sync): « '+v.dialogue_fr+' »') : '',
+          'CAMERA: continuous shot. Locked-off or slow dolly-in.',
+          'AUDIO: character speaks the line. NO MUSIC.',
+          'FORMAT: portrait 9:16, cinematic.'
+        ].filter(Boolean).join('\n');
+
+        let att = 0; const max = Math.max(4, state.keys.length*2); let ok = false;
+        while(att < max && !state.stopRequested && !ok){
+          att++;
+          try{
+            const kk = await acquireKey('video');
+            v.keyLast4 = kk.key.slice(-4);
+            const task = await createVideoTask(videoPrompt, v.imgUrl, kk);
+            // Track pending
+            const pnd = {
+              id: uid('pend'),
+              compositeId: task.compositeId,
+              innerId: task.innerId,
+              label: 'Film — '+v.label,
+              prompt: videoPrompt,
+              scene: v.scene,
+              dialogue_fr: v.dialogue_fr,
+              imgUrl: v.imgUrl,
+              sessionId: state.currentSessionId,
+              createdAt: Date.now()
+            };
+            await dbPut('pendingVideos', pnd);
+            state.pendingVideos.push(pnd);
+            renderPendingVideos();
+            renderPills();
+
+            const pollKey = await acquireKey('video');
+            const vurl = await pollVideoTask(task, pollKey, (prog)=>{ v.progress = prog; renderFilmSection() });
+            // Remove from pending
+            await dbDelete('pendingVideos', pnd.id);
+            state.pendingVideos = state.pendingVideos.filter(x=>x.id !== pnd.id);
+            renderPendingVideos();
+
+            v.status='done'; v.url = vurl; v.error = null; ok = true; doneCount++;
+            renderFilmSection();
+            await saveSessionData();
+            // Add to videos DB
+            const vid = {
+              id: uid('vid'),
+              url: vurl,
+              label: 'Film — '+v.label,
+              prompt: videoPrompt,
+              scene: v.scene,
+              dialogue_fr: v.dialogue_fr,
+              type: 'film',
+              sessionId: state.currentSessionId,
+              createdAt: Date.now()
+            };
+            await dbPut('videosDB', vid);
+            state.videosDB.unshift(vid);
+            renderVideoLibrary();
+            renderPills();
+            setProgress(50 + (doneCount/state.film.videos.length)*50);
+          }catch(e){
+            if(e.message === 'Arrêt demandé'){ v.status='error'; v.error='Arrêté'; renderFilmSection(); return }
+            if(e.status === 429){ await sleep(20000); continue }
+            if(att >= max){ v.status='error'; v.error=(e.message||'Erreur').slice(0,50); renderFilmSection(); await saveSessionData() }
+            else await sleep(3000);
+          }
+        }
+      }
+    };
+    const ws = []; for(let i=0; i<workers; i++) ws.push(worker());
+    await Promise.all(ws);
+
+    state.film.status = 'ready';
+    await saveSessionData();
+    renderFilmSection();
+    toast('Film prêt','ok');
+    setProgress(100);
+    await sleep(700);
+    hideProgress();
+  }catch(e){
+    log('error','FILM', e.message);
+    if(state.film) state.film.status = 'error';
+    toast('Erreur film','err');
+    hideProgress();
+  }finally{
+    state.isGeneratingFilm = false;
+    updateButtons();
+    await deactivateWakeLock();
+    await saveSessionData();
+  }
+}
+
+async function inventFilm(){
+  // For the classic film section : from filmSelection
+  if(state.filmSelection.length === 0){ toast('Sélectionnez des images','err'); return }
+  const selected = state.filmSelection.map(id=>state.images.find(i=>i.id===id)).filter(Boolean);
+  if(selected.length === 0) return;
+
+  // Reuse the same flow as startFilmFromVariants but from selected images
+  const images = selected.slice();
+  state.isGeneratingFilm = true;
+  state.film = {status:'analyzing', story:'', title:'', videos: images.map(i=>({imgId:i.id, label:i.label, imgUrl:i.url, status:'pending', url:null, dialogue_fr:'', scene:'', keyLast4:'', error:null}))};
+  await saveSessionData();
+  renderFilmSection();
+  showProgress('Écriture du scénario…','');
+  setProgress(5);
+  await activateWakeLock();
+
+  try{
+    const k = await acquireKey('video');
+    const sys = state.config.prompt_film || DEFAULT_PROMPTS.film;
+    const list = images.map((img,i)=>'Plan '+(i+1)+' — '+img.label+'\nPrompt : '+(img.prompt||'').slice(0,400)).join('\n\n');
+    const userText = 'Voici '+images.length+' images qui formeront une scène de film.\n\n'+list+'\n\nÉcris une histoire. Chaque plan a UNE phrase de dialogue FR (6-14 mots).\nRetourne : { "title":"...", "story":"...", "tone":"...", "videos":[ { "scene":"...", "dialogue_fr":"..." }, ... '+images.length+' ] }';
+    let content = null, att = 0;
+    while(!content && att < 3){
+      att++;
+      try{ content = await callText(sys, userText, k, 3500, 0.85) }
+      catch(e){ if(e.status===429){ await sleep(15000); continue } if(att>=3) throw e; await sleep(2000) }
+    }
+    const parsed = parseJson(content);
+    if(!parsed || !Array.isArray(parsed.videos)) throw new Error('Scénario invalide');
+    for(let i=0; i<state.film.videos.length; i++){
+      const v = state.film.videos[i];
+      const item = parsed.videos[i] || {};
+      v.scene = item.scene || '';
+      v.dialogue_fr = item.dialogue_fr || '';
+    }
+    state.film.title = parsed.title || 'Film';
+    state.film.story = parsed.story || '';
+    state.film.status = 'generating';
+    await saveSessionData();
+    renderFilmSection();
+    setProgress(50);
+
+    const workers = Math.min(Math.max(1, state.keys.filter(kk=>kk.active).length), state.film.videos.length);
+    const q = state.film.videos.slice();
+    let doneCount = 0;
+
+    const worker = async ()=>{
+      while(q.length > 0 && !state.stopRequested){
+        const v = q.shift(); if(!v) break;
+        let styleHint = '';
+        const srcImg = images.find(x=>String(x.id) === String(v.imgId));
+        if(srcImg?.prompt) styleHint = '\nVISUAL STYLE TO PRESERVE: '+(srcImg.prompt.slice(0,200));
+
+        const videoPrompt = [
+          'CINEMATIC FILM SHOT — '+(FILM_VIDEO_FRAMES/FILM_VIDEO_FPS).toFixed(1)+'S — PORTRAIT.',
+          'The provided image is the FIRST FRAME and visual REFERENCE.',
+          'Preserve the same character and same visual style.',
+          styleHint, '',
+          v.scene ? ('SCENE: '+v.scene) : '', '',
+          v.dialogue_fr ? ('SPOKEN DIALOGUE (FRENCH, lips in sync): « '+v.dialogue_fr+' »') : '',
+          'CAMERA: continuous shot. NO MUSIC.',
+          'FORMAT: portrait 9:16, cinematic.'
+        ].filter(Boolean).join('\n');
+
+        let att = 0; const max = Math.max(4, state.keys.length*2); let ok = false;
+        while(att < max && !state.stopRequested && !ok){
+          att++;
+          try{
+            const kk = await acquireKey('video');
+            v.keyLast4 = kk.key.slice(-4);
+            const task = await createVideoTask(videoPrompt, v.imgUrl, kk);
+            const pnd = {id: uid('pend'), compositeId: task.compositeId, innerId: task.innerId, label:'Film — '+v.label, prompt:videoPrompt, scene:v.scene, dialogue_fr:v.dialogue_fr, imgUrl:v.imgUrl, sessionId:state.currentSessionId, createdAt:Date.now()};
+            await dbPut('pendingVideos', pnd);
+            state.pendingVideos.push(pnd);
+            renderPendingVideos(); renderPills();
+            const pollKey = await acquireKey('video');
+            const vurl = await pollVideoTask(task, pollKey, (prog)=>{ v.progress = prog; renderFilmSection() });
+            await dbDelete('pendingVideos', pnd.id);
+            state.pendingVideos = state.pendingVideos.filter(x=>x.id !== pnd.id);
+            renderPendingVideos();
+            v.status='done'; v.url = vurl; ok = true; doneCount++;
+            renderFilmSection();
+            await saveSessionData();
+            const vid = {id: uid('vid'), url: vurl, label: 'Film — '+v.label, prompt: videoPrompt, scene: v.scene, dialogue_fr: v.dialogue_fr, type: 'film', sessionId: state.currentSessionId, createdAt: Date.now()};
+            await dbPut('videosDB', vid);
+            state.videosDB.unshift(vid);
+            renderVideoLibrary(); renderPills();
+            setProgress(50 + (doneCount/state.film.videos.length)*50);
+          }catch(e){
+            if(e.message === 'Arrêt demandé'){ v.status='error'; v.error='Arrêté'; renderFilmSection(); return }
+            if(e.status === 429){ await sleep(20000); continue }
+            if(att >= max){ v.status='error'; v.error=(e.message||'Erreur').slice(0,50); renderFilmSection(); await saveSessionData() }
+            else await sleep(3000);
+          }
+        }
+      }
+    };
+    const ws = []; for(let i=0; i<workers; i++) ws.push(worker());
+    await Promise.all(ws);
+
+    state.film.status = 'ready';
+    await saveSessionData();
+    renderFilmSection();
+    toast('Film prêt','ok');
+    setProgress(100);
+    await sleep(700);
+    hideProgress();
+  }catch(e){
+    log('error','FILM', e.message);
+    if(state.film) state.film.status = 'error';
+    toast('Erreur film','err');
+    hideProgress();
+  }finally{
+    state.isGeneratingFilm = false;
+    updateButtons();
+    await deactivateWakeLock();
+    await saveSessionData();
+  }
+}
+
+// ==================================================================
+// SAVED STYLES
+// ==================================================================
+async function toggleSaveStyleFromImage(imgId){
+  const img = state.images.find(i=>i.id === imgId);
+  if(!img) return;
+  const existing = state.savedStyles.find(s=>s.sourceImageId === img.id && s.sessionId === state.currentSessionId);
+  if(existing){
+    await dbDelete('savedStyles', existing.id);
+    state.savedStyles = state.savedStyles.filter(s=>s.id !== existing.id);
+    img.savedAsStyle = false;
+    toast('Style retiré','warn');
+  }else{
+    const id = uid('style');
+    const style = {id, label: img.label || 'Style sans nom', prompt: img.prompt || '', savedAt: Date.now(), sessionId: state.currentSessionId, sourceImageId: img.id, planId: null};
+    await dbPut('savedStyles', style);
+    state.savedStyles.push(style);
+    img.savedAsStyle = true;
+    toast('Style enregistré ⭐','gold');
+  }
+  await saveSessionData();
+  renderImages(); renderSavedStyles(); renderPills();
+}
+async function toggleSaveStyleFromVariant(parentId, vrId){
+  const entry = state.variantsByImage[parentId];
+  if(!entry) return;
+  const plan = entry.plans.find(p=>p.id === vrId);
+  if(!plan) return;
+  const existing = state.savedStyles.find(s=>s.planId === vrId);
+  if(existing){
+    await dbDelete('savedStyles', existing.id);
+    state.savedStyles = state.savedStyles.filter(s=>s.id !== existing.id);
+    plan.savedAsStyle = false;
+    toast('Style retiré','warn');
+  }else{
+    const id = uid('style');
+    const style = {id, label: plan.label || 'Variante', prompt: plan.prompt || '', savedAt: Date.now(), sessionId: state.currentSessionId, sourceImageId: null, planId: vrId};
+    await dbPut('savedStyles', style);
+    state.savedStyles.push(style);
+    plan.savedAsStyle = true;
+    toast('Style enregistré ⭐','gold');
+  }
+  await saveSessionData();
+  renderImages(); renderSavedStyles(); renderPills();
+}
+async function generateFromSavedStyles(){
+  if(state.isGeneratingFromSaved){ toast('Déjà en cours','warn'); return }
+  const ids = Object.keys(state.savedStyleSelected).filter(k=>state.savedStyleSelected[k]);
+  if(ids.length === 0){ toast('Sélectionnez au moins 1 style','warn'); return }
+  if(state.keys.filter(k=>k.active).length === 0){ toast('Ajoutez une clé','err'); return }
+  const selected = state.savedStyles.filter(s=>ids.indexOf(s.id) !== -1);
+  if(selected.length === 0) return;
+
+  state.isGeneratingFromSaved = true;
+  updateButtons();
+  const tasks = selected.map(s=>({kind:'extended', label:'⭐ '+s.label, prompt:s.prompt, referenceUri: state.reference}));
+  try{
+    await runBatch(tasks, 'Application de vos favoris…');
+    toast(tasks.length+' images générées','ok');
+  }catch(e){ log('error','FAV', e.message) }
+  finally{ state.isGeneratingFromSaved = false; updateButtons() }
+}
+
+function toggleFilmSelection(id){
+  const img = state.images.find(i=>i.id === id);
+  if(!img || img.status !== 'done') return;
+  const idx = state.filmSelection.indexOf(id);
+  if(idx !== -1) state.filmSelection.splice(idx,1);
+  else state.filmSelection.push(id);
+  saveSessionData();
+  renderImages(); renderFilmSection(); renderPills();
+}
+
+// ==================================================================
+// RESUME PENDING
+// ==================================================================
+async function resumeOnePending(id){
+  const p = state.pendingVideos.find(x=>x.id === id);
+  if(!p) return;
+  toast('Reprise…','gold');
+  try{
+    const k = await acquireKey('video');
+    const url = await pollVideoTask({compositeId: p.compositeId, innerId: p.innerId}, k, (prog)=>log('info','REPRISE', prog));
+    const vid = {id: uid('vid'), url, label: p.label, prompt: p.prompt, scene: p.scene, dialogue_fr: p.dialogue_fr, type: 'film', sessionId: p.sessionId, createdAt: Date.now()};
+    await dbPut('videosDB', vid);
+    state.videosDB.unshift(vid);
+    await dbDelete('pendingVideos', id);
+    state.pendingVideos = state.pendingVideos.filter(x=>x.id !== id);
+    renderVideoLibrary(); renderPendingVideos(); renderPills();
+    toast('Vidéo récupérée','ok');
+  }catch(e){
+    toast('Échec : '+e.message.slice(0,40),'err');
+  }
+}
+async function resumeAllPending(){
+  const list = state.pendingVideos.slice();
+  for(const p of list){
+    if(state.stopRequested) break;
+    await resumeOnePending(p.id);
+  }
+}
+
+// ==================================================================
+// ADMIN - CHAT
+// ==================================================================
+function renderChatHistory(){
+  const box = $('chat-messages');
+  if(!box) return;
+  box.innerHTML = state.chatHistory.map(m=>
+    '<div class="chat-msg '+(m.role==='user'?'user':'assistant')+'">'+esc(m.content)+'</div>'
+  ).join('');
+  box.scrollTop = box.scrollHeight;
+}
+async function sendChatMessage(){
+  const inp = $('chat-input');
+  const msg = (inp.value||'').trim();
+  if(!msg) return;
+  inp.value = '';
+  const userMsg = {role:'user', content: msg, createdAt: Date.now()};
+  state.chatHistory.push(userMsg);
+  await dbPut('chatHistory', {role:'user', content: msg, createdAt: Date.now()});
+  renderChatHistory();
+
+  try{
+    const k = await acquireKey('video');
+    const sys = 'Tu es un assistant expert en direction artistique. Tu aides l\'utilisateur à améliorer la liste des catégories pour générer des styles. Tu réponds en français, de manière concise. Si tu proposes des catégories, termine par un bloc JSON : {"suggested_categories": [{"id":"...","label":"..."}...]}.';
+    const userText = 'Catégories actuelles : '+state.categories.map(c=>c.label).join(' | ')+'\n\nDemande : '+msg;
+    const content = await callText(sys, userText, k, 2000, 0.7);
+    const assistantMsg = {role:'assistant', content: content, createdAt: Date.now()};
+    state.chatHistory.push(assistantMsg);
+    await dbPut('chatHistory', {role:'assistant', content: content, createdAt: Date.now()});
+    renderChatHistory();
+  }catch(e){
+    const errMsg = {role:'assistant', content: 'Erreur : '+e.message, createdAt: Date.now()};
+    state.chatHistory.push(errMsg);
+    await dbPut('chatHistory', errMsg);
+    renderChatHistory();
+  }
+}
+async function applyChatSuggestions(){
+  // Find last assistant message containing suggested_categories
+  let found = null;
+  for(let i=state.chatHistory.length-1; i>=0; i--){
+    const m = state.chatHistory[i];
+    if(m.role === 'assistant'){
+      const parsed = parseJson(m.content);
+      if(parsed && Array.isArray(parsed.suggested_categories)){
+        found = parsed.suggested_categories;
+        break;
+      }
+      // Try to extract any JSON block
+      const fm = m.content.match(/\{[\s\S]*"suggested_categories"[\s\S]*\}/);
+      if(fm){
+        try{ const p = JSON.parse(fm[0]); if(Array.isArray(p.suggested_categories)){ found = p.suggested_categories; break } }catch(e){}
+      }
+    }
+  }
+  if(!found || found.length === 0){ toast('Aucune suggestion trouvée dans le chat','warn'); return }
+  if(!confirm('Ajouter '+found.length+' catégories ?')) return;
+  found.forEach(c=>{
+    if(c.id && c.label && !state.categories.find(x=>x.id === c.id)){
+      state.categories.push({id: c.id, label: c.label});
+    }
+  });
+  await saveCategories();
+  renderCategoriesList(); renderCategorySelect();
+  toast(found.length+' catégories ajoutées','ok');
+}
+
+// ==================================================================
+// EXPORT / IMPORT / RESET
+// ==================================================================
+async function exportDB(){
+  const dump = {
+    version: DB_VERSION,
+    exportedAt: new Date().toISOString(),
+    keys: state.keys,
+    sessions: await dbGetAll('sessions'),
+    savedStyles: state.savedStyles,
+    videosDB: state.videosDB,
+    pendingVideos: state.pendingVideos,
+    config: state.config,
+    chatHistory: state.chatHistory
+  };
+  const blob = new Blob([JSON.stringify(dump, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'studio-db-'+Date.now()+'.json';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  toast('Base exportée','ok');
+}
+async function importDB(){
+  const inp = document.createElement('input');
+  inp.type = 'file'; inp.accept = '.json';
+  inp.onchange = async e=>{
+    const f = e.target.files[0]; if(!f) return;
+    try{
+      const text = await f.text();
+      const data = JSON.parse(text);
+      if(!confirm('Importer cette base ? Les données actuelles seront remplacées.')) return;
+      if(data.keys){ for(const k of data.keys){ if(!k.id) k.id = uid('k'); await dbPut('keys', k) } }
+      if(data.sessions){ for(const s of data.sessions){ await dbPut('sessions', s) } }
+      if(data.savedStyles){ for(const s of data.savedStyles){ await dbPut('savedStyles', s) } }
+      if(data.videosDB){ for(const v of data.videosDB){ await dbPut('videosDB', v) } }
+      if(data.pendingVideos){ for(const p of data.pendingVideos){ await dbPut('pendingVideos', p) } }
+      if(data.config){ for(const key of Object.keys(data.config)){ await dbPut('config', {key, value: data.config[key]}) } }
+      if(data.chatHistory){ for(const m of data.chatHistory){ await dbPut('chatHistory', m) } }
+      location.reload();
+    }catch(e){ toast('Erreur import','err') }
+  };
+  inp.click();
+}
+async function resetDB(){
+  if(!confirm('Effacer TOUTE la base ? Action irréversible.')) return;
+  if(!confirm('Vraiment sûr ?')) return;
+  await dbClear('keys'); await dbClear('sessions'); await dbClear('savedStyles');
+  await dbClear('videosDB'); await dbClear('pendingVideos'); await dbClear('config'); await dbClear('chatHistory');
+  location.reload();
+}
+
+// ==================================================================
+// INIT
+// ==================================================================
+async function init(){
+  log('state','INIT','Ouverture de la base de données…');
+  try{
+    db = await openDB();
+  }catch(e){
+    log('error','DB','Impossible d\'ouvrir : '+e.message);
+    alert('Impossible d\'ouvrir la base de données IndexedDB. Vérifiez votre navigateur.');
+    return;
+  }
+  log('success','DB','Base ouverte');
+
+  // Load config
+  try{
+    const configs = await dbGetAll('config');
+    configs.forEach(c=>{ state.config[c.key] = c.value });
+  }catch(e){}
+
+  // Load keys
+  try{ state.keys = await dbGetAll('keys') }catch(e){ state.keys = [] }
+  state.keys.forEach(k=>{ k.imgTimes = []; k.videoTimes = []; k.active = k.active !== false; k.cooldownUntil = 0; k.errorCount = 0 });
+
+  // Load sessions
+  state.sessionsIndex = await loadSessionsIndex();
+  if(state.sessionsIndex.length === 0){
+    const id = uid('sess');
+    const sess = {id, name:'Session 1', createdAt: Date.now(), updatedAt: Date.now(), imageCount:0};
+    state.sessionsIndex.push(sess);
+    await dbPut('sessions', sess);
+  }
+
+  // Load saved styles
+  try{ state.savedStyles = await dbGetAll('savedStyles') }catch(e){ state.savedStyles = [] }
+
+  // Load videos
+  try{ state.videosDB = (await dbGetAll('videosDB')).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)) }catch(e){ state.videosDB = [] }
+
+  // Load pending videos
+  try{ state.pendingVideos = await dbGetAll('pendingVideos') }catch(e){ state.pendingVideos = [] }
+
+  // Load chat history
+  try{ state.chatHistory = (await dbGetAll('chatHistory')).slice(-40) }catch(e){ state.chatHistory = [] }
+
+  // Categories
+  if(state.config.categories && Array.isArray(state.config.categories)){
+    state.categories = state.config.categories;
+  }else{
+    state.categories = DEFAULT_CATEGORIES.slice();
+    await saveCategories();
+  }
+
+  // Current session
+  const savedCurrent = state.config.currentSession;
+  const exists = state.sessionsIndex.find(s=>s.id === savedCurrent);
+  state.currentSessionId = exists ? savedCurrent : state.sessionsIndex[0].id;
+  const data = await dbGet('sessions', state.currentSessionId);
+  if(data){
+    state.reference = data.reference || null;
+    state.analysis = data.analysis || null;
+    state.images = data.images || [];
+    state.images.forEach(i=>{ if(i.status==='loading'){ i.status='error'; i.error='Interrompu' } });
+    nextImgId = Math.max(1, ...state.images.map(i=>i.id||0)) + 1;
+    state.variantsByImage = data.variantsByImage || {};
+    Object.values(state.variantsByImage).forEach(entry=>{
+      if(entry && Array.isArray(entry.plans)) entry.plans.forEach(p=>{ if(p.status==='loading'){ p.status='error'; p.error='Interrompu' } });
+    });
+    let maxV = 0;
+    Object.values(state.variantsByImage).forEach(e=>{
+      if(e && Array.isArray(e.plans)) e.plans.forEach(p=>{ if(p.id && p.id > maxV) maxV = p.id });
+    });
+    nextVariantId = maxV + 1;
+    state.styleLibrary = data.styleLibrary || {};
+    state.filmSelection = data.filmSelection || [];
+    state.film = data.film || null;
+    if(state.film && (state.film.status==='analyzing'||state.film.status==='generating')){
+      state.film.status = 'error'; state.film.error = 'Interrompu';
+    }
+    state.lastCategory = data.lastCategory || (state.categories[0]?.id || '');
+  }
+
+  renderAll();
+  renderChatHistory();
+
+  // Events : tabs
+  document.querySelectorAll('.main-tab').forEach(t=>{
+    t.addEventListener('click', ()=>{
+      document.querySelectorAll('.main-tab').forEach(x=>x.classList.remove('active'));
+      document.querySelectorAll('.tab-panel').forEach(x=>x.classList.remove('active'));
+      t.classList.add('active');
+      const panel = $('tab-'+t.dataset.tab);
+      if(panel) panel.classList.add('active');
+      if(t.dataset.tab === 'admin'){ renderAdminStats(); renderKeysTable(); renderCategoriesList(); renderPromptsAdmin() }
+    });
+  });
+
+  // Sections toggle
+  document.querySelectorAll('[data-toggle]').forEach(h=>{
+    h.addEventListener('click', ()=>{
+      const el = document.getElementById(h.dataset.toggle);
+      if(el) el.classList.toggle('open');
+    });
+  });
+
+  // Sessions
+  $('session-select').addEventListener('change', e=>switchToSession(e.target.value));
+  $('new-session-btn').addEventListener('click', ()=>{
+    const name = prompt('Nom :', 'Session '+(state.sessionsIndex.length+1));
+    if(name !== null) createSession(name.trim() || undefined);
+  });
+  $('rename-session-btn').addEventListener('click', renameSession);
+  $('delete-session-btn').addEventListener('click', deleteSession);
+
+  // Launch
+  $('launch-btn').addEventListener('click', e=>{ e.preventDefault(); launchEverything() });
+  $('more-styles-btn').addEventListener('click', e=>{ e.preventDefault(); extendStyles() });
+  $('film-create-btn').addEventListener('click', e=>{ e.preventDefault(); inventFilm() });
+
+  // Saved
+  $('saved-generate-btn').addEventListener('click', e=>{ e.preventDefault(); generateFromSavedStyles() });
+  $('saved-select-all').addEventListener('click', ()=>{ state.savedStyles.forEach(s=>{ state.savedStyleSelected[s.id]=true }); renderSavedStyles() });
+  $('saved-deselect-all').addEventListener('click', ()=>{ state.savedStyleSelected = {}; renderSavedStyles() });
+  $('saved-delete-selected').addEventListener('click', async ()=>{
+    const ids = Object.keys(state.savedStyleSelected).filter(k=>state.savedStyleSelected[k]);
+    if(ids.length === 0){ toast('Aucune sélection','warn'); return }
+    if(!confirm('Supprimer '+ids.length+' style(s) ?')) return;
+    for(const id of ids){ await dbDelete('savedStyles', id); state.savedStyles = state.savedStyles.filter(x=>x.id !== id) }
+    state.savedStyleSelected = {};
+    renderAll();
+  });
+
+  // Keys admin
+  $('save-keys-btn').addEventListener('click', async ()=>{
+    const parsed = parseKeys($('keys-input').value);
+    if(parsed.length === 0){ toast('Aucune clé valide','err'); return }
+    // Merge with existing : preserve usage
+    for(const p of parsed){
+      const existing = state.keys.find(x=>x.key === p.key);
+      if(existing){
+        existing.imgRpm = p.imgRpm; existing.videoRpm = p.videoRpm;
+        await dbPut('keys', existing);
+      }else{
+        const k = {id: uid('k'), key: p.key, imgRpm: p.imgRpm, videoRpm: p.videoRpm, createdAt: Date.now(), imgUsage: 0, videoUsage: 0, lastUsed: null, active: true};
+        await dbPut('keys', k);
+        k.imgTimes = []; k.videoTimes = []; k.cooldownUntil = 0; k.errorCount = 0;
+        state.keys.push(k);
+      }
+    }
+    renderAll();
+    toast(parsed.length+' clé(s) enregistrée(s)','ok');
+  });
+
+  // Prompts admin
+  $('save-prompts-btn').addEventListener('click', savePrompts);
+  $('reset-prompts-btn').addEventListener('click', async ()=>{
+    if(!confirm('Restaurer les prompts par défaut ?')) return;
+    $('prompt-analysis').value = DEFAULT_PROMPTS.analysis;
+    $('prompt-styles').value = DEFAULT_PROMPTS.styles;
+    $('prompt-variants').value = DEFAULT_PROMPTS.variants;
+    $('prompt-film').value = DEFAULT_PROMPTS.film;
+    await savePrompts();
+  });
+
+  // Categories admin
+  $('reset-categories-btn').addEventListener('click', async ()=>{
+    if(!confirm('Restaurer les catégories par défaut ?')) return;
+    state.categories = DEFAULT_CATEGORIES.slice();
+    await saveCategories();
+    renderCategoriesList(); renderCategorySelect();
+  });
+
+  // Chat
+  $('chat-send-btn').addEventListener('click', sendChatMessage);
+  $('chat-input').addEventListener('keydown', e=>{ if(e.key === 'Enter'){ e.preventDefault(); sendChatMessage() } });
+  $('chat-apply-btn').addEventListener('click', applyChatSuggestions);
+
+  // Export / import / reset
+  $('export-db-btn').addEventListener('click', exportDB);
+  $('import-db-btn').addEventListener('click', importDB);
+  $('reset-db-btn').addEventListener('click', resetDB);
+
+  // Videos
+  $('videolib-clear-btn').addEventListener('click', async ()=>{
+    if(!confirm('Vider la vidéothèque ?')) return;
+    await dbClear('videosDB');
+    state.videosDB = [];
+    renderVideoLibrary(); renderPills();
+  });
+
+  // Modal
+  $('prompt-modal-close').addEventListener('click', ()=>$('prompt-modal').classList.remove('visible'));
+  $('prompt-modal').addEventListener('click', e=>{ if(e.target === $('prompt-modal')) $('prompt-modal').classList.remove('visible') });
+  $('prompt-modal-copy').addEventListener('click', async ()=>{
+    const ok = await copyToClipboard($('prompt-modal-text').value);
+    toast(ok?'Copié':'Échec', ok?'ok':'err');
+  });
+
+  // Console
+  $('console-header').addEventListener('click', e=>{ if(e.target.tagName === 'BUTTON') return; toggleConsole() });
+  $('console-toggle').addEventListener('click', e=>{ e.stopPropagation(); toggleConsole() });
+  $('console-copy').addEventListener('click', e=>{ e.stopPropagation(); copyConsole() });
+  $('console-clear').addEventListener('click', e=>{ e.stopPropagation(); clearConsole() });
+
+  // Auto-save
+  setInterval(async ()=>{ if(state.currentSessionId) await saveSessionData() }, 4000);
+
+  // beforeunload : save
+  window.addEventListener('beforeunload', ()=>{
+    if(state.currentSessionId) saveSessionData();
+  });
+
+  // Resume pending
+  setTimeout(()=>{ if(state.pendingVideos.length > 0) resumeAllPending() }, 2000);
+
+  log('success','INIT', state.keys.length+' clés · '+state.sessionsIndex.length+' sessions · '+state.savedStyles.length+' styles ⭐ · '+state.videosDB.length+' vidéos · '+state.pendingVideos.length+' en cours');
+  log('info','ASTUCE','Tout est dans IndexedDB — les données persistent même si vous fermez la page');
+  log('info','ASTUCE','Onglet Admin pour voir la base et modifier les prompts');
+  log('info','ASTUCE','Champ libre à côté des catégories pour décrire ce que vous voulez');
+}
+
+function toggleConsole(){
+  const dock = $('console-dock');
+  const btn = $('console-toggle');
+  const open = dock.classList.toggle('collapsed');
+  btn.textContent = open ? '▴' : '▾';
+}
+function openPromptModal(label, prompt){
+  $('prompt-modal-title').textContent = label || 'Prompt';
+  $('prompt-modal-text').value = prompt || '';
+  $('prompt-modal').classList.add('visible');
+}
+
+// Start
+init();
+</script>
+</body>
+</html>

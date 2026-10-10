@@ -1,0 +1,1702 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>NewsReel Studio — Le JT</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+:root {
+--night: #0a0a12; --night-2: #12121c; --night-3: #1a1a28;
+--panel: #16161f; --panel-2: #1e1e2b; --border: #2a2a3a; --border-soft: #23232f;
+--orange: #e87b35; --orange-soft: #f0a060; --orange-deep: #b85a1e;
+--blue: #4a7bc8; --blue-soft: #6a9be0; --blue-deep: #2c4a80;
+--yellow: #e5c15a; --yellow-soft: #f0d080; --yellow-deep: #b89a3a;
+--purple: #8b5fc4; --purple-soft: #a880d8; --purple-deep: #5c3a8a;
+--mint: #a8d8c8; --lavender: #c8b0e0;
+--ink: #e8e6e0; --ink-dim: #8a8896; --ink-faint: #4a4858;
+--success: #4a9d6a; --error: #c85a4a; --warn: #d4a017;
+--radius: 4px; --font-serif: 'Cormorant Garamond', 'Times New Roman', Georgia, serif;
+--font-sans: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+--font-mono: ui-monospace, 'SF Mono', Menlo, monospace;
+}
+html, body { background: var(--night); }
+body {
+font-family: var(--font-sans); background: var(--night);
+background-image: radial-gradient(circle at 15% 0%, rgba(232,123,53,0.05) 0%, transparent 45%),
+radial-gradient(circle at 85% 100%, rgba(139,95,196,0.05) 0%, transparent 45%);
+background-attachment: fixed; color: var(--ink); min-height: 100vh;
+padding: 1.5rem 1rem 24rem; font-size: 15px; line-height: 1.55;
+max-width: 900px; margin: 0 auto; letter-spacing: 0.01em;
+}
+header { margin-bottom: 2rem; text-align: center; position: relative; padding: 1rem 0 1.5rem; }
+header::before { content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 40px; height: 2px; background: linear-gradient(90deg, transparent, var(--yellow), transparent); }
+header::after { content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 120px; height: 1px; background: linear-gradient(90deg, transparent, var(--orange), var(--yellow), var(--purple), transparent); opacity: 0.5; }
+.kata-mark { display: inline-block; font-family: var(--font-serif); font-size: 0.75rem; letter-spacing: 0.4em; color: var(--yellow); text-transform: uppercase; margin-bottom: 0.6rem; opacity: 0.75; }
+h1 { font-family: var(--font-serif); font-size: 2.2rem; font-weight: 300; letter-spacing: 0.02em; margin-bottom: 0.5rem; background: linear-gradient(135deg, var(--orange) 0%, var(--yellow) 30%, var(--mint) 50%, var(--lavender) 75%, var(--purple) 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; line-height: 1.05; }
+.subtitle { font-family: var(--font-serif); font-size: 0.9rem; color: var(--ink-dim); font-style: italic; letter-spacing: 0.05em; }
+
+.toast { position: fixed; top: 1.5rem; left: 50%; transform: translateX(-50%) translateY(-120px); background: var(--night-3); color: var(--ink); border: 1px solid var(--border); border-left: 3px solid var(--yellow); padding: 0.85rem 1.4rem; border-radius: var(--radius); font-size: 0.85rem; font-weight: 500; box-shadow: 0 8px 32px rgba(0,0,0,0.6); z-index: 1000; opacity: 0; transition: transform 0.35s cubic-bezier(0.2,0.9,0.3,1.2), opacity 0.35s ease; max-width: 90vw; text-align: center; display: flex; align-items: center; gap: 0.6rem; }
+.toast.visible { transform: translateX(-50%) translateY(0); opacity: 1; }
+.toast.success { border-left-color: var(--success); }
+.toast.error { border-left-color: var(--error); }
+.toast.warn { border-left-color: var(--warn); }
+.toast .toast-icon { font-size: 1rem; color: var(--yellow); }
+
+.info-banner { background: linear-gradient(135deg, rgba(200,176,224,0.06), rgba(168,216,200,0.05)); border: 1px solid var(--border); border-left: 2px solid var(--lavender); padding: 1rem 1.15rem; border-radius: var(--radius); font-size: 0.8rem; color: var(--ink-dim); margin-bottom: 1.2rem; line-height: 1.6; position: relative; }
+.info-banner::before { content: '聞'; position: absolute; top: 0.6rem; right: 0.9rem; font-family: var(--font-serif); font-size: 1.6rem; color: var(--orange); opacity: 0.2; line-height: 1; }
+.info-banner strong { color: var(--ink); font-weight: 600; }
+.info-banner strong.hl-blue { color: var(--blue-soft); }
+.info-banner strong.hl-yellow { color: var(--yellow-soft); }
+.info-banner strong.hl-lavender { color: var(--lavender); }
+.info-banner strong.hl-mint { color: var(--mint); }
+.info-banner strong.hl-orange { color: var(--orange-soft); }
+.info-banner strong.hl-purple { color: var(--purple-soft); }
+
+.section { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 1rem; overflow: hidden; }
+.section.open { box-shadow: 0 0 0 1px rgba(229,193,90,0.05), 0 4px 20px rgba(0,0,0,0.3); }
+.section-header { padding: 1rem 1.2rem; cursor: pointer; user-select: none; display: flex; justify-content: space-between; align-items: center; }
+.section-header:active { background: var(--panel-2); }
+.section-title { font-family: var(--font-serif); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.2em; color: var(--ink); font-weight: 500; display: flex; align-items: center; gap: 0.6rem; }
+.section-title .badge { display: inline-block; padding: 0.15rem 0.55rem; background: transparent; color: var(--yellow); border: 1px solid var(--yellow-deep); border-radius: 2px; font-size: 0.6rem; letter-spacing: 0.15em; font-family: var(--font-sans); font-weight: 600; }
+.section-title .badge.soft { color: var(--blue-soft); border-color: var(--blue-deep); }
+.section-title .badge.success { color: var(--orange-soft); border-color: var(--orange-deep); }
+.section-title .badge.purple { color: var(--purple-soft); border-color: var(--purple-deep); }
+.section-header .chevron { font-size: 0.7rem; color: var(--ink-faint); transition: transform 0.3s; }
+.section.open .section-header .chevron { transform: rotate(180deg); color: var(--yellow); }
+.section-body { max-height: 0; overflow: hidden; transition: max-height 0.4s ease; }
+.section.open .section-body { max-height: 8000px; }
+.section-content { padding: 0 1.2rem 1.2rem; }
+
+.api-panel { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.2rem 1.3rem; margin-bottom: 1rem; }
+.api-panel.ok { box-shadow: inset 3px 0 0 var(--success), 0 0 20px rgba(74,157,106,0.08); }
+.api-key-input { width: 100%; padding: 0.85rem 1rem; border-radius: var(--radius); border: 1px solid var(--border); background: var(--night-2); color: var(--ink); font-family: var(--font-mono); font-size: 0.82rem; margin-bottom: 0.6rem; }
+.api-key-input:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px rgba(74,123,200,0.12); }
+.api-save-btn { width: 100%; padding: 0.85rem 1.2rem; border-radius: var(--radius); border: 1px solid var(--yellow-deep); background: linear-gradient(135deg, rgba(232,123,53,0.15), rgba(229,193,90,0.1)); color: var(--yellow-soft); font-size: 0.85rem; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; cursor: pointer; margin-bottom: 0.7rem; }
+.api-status-line { font-size: 0.75rem; padding: 0.6rem 0.9rem; border-radius: var(--radius); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.6rem; background: var(--night-2); color: var(--ink-dim); border: 1px solid var(--border-soft); }
+.api-status-line.ok { background: rgba(74,157,106,0.08); color: var(--success); border-color: rgba(74,157,106,0.3); font-weight: 500; }
+.api-status-line .status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--ink-faint); flex-shrink: 0; }
+.api-status-line.ok .status-dot { background: var(--success); box-shadow: 0 0 8px var(--success); }
+.api-hint { font-size: 0.72rem; color: var(--ink-dim); margin-top: 0.5rem; }
+.api-hint a { color: var(--blue-soft); text-decoration: none; border-bottom: 1px dotted var(--blue-deep); }
+.stat-line { font-size: 0.72rem; color: var(--ink-dim); margin-top: 0.6rem; padding: 0.5rem 0.7rem; background: var(--night-2); border-radius: var(--radius); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.3rem; border: 1px solid var(--border-soft); font-family: var(--font-mono); }
+.wake-status { font-size: 0.72rem; padding: 0.6rem 0.8rem; border-radius: var(--radius); margin-top: 0.5rem; display: flex; justify-content: space-between; align-items: center; background: rgba(74,123,200,0.08); color: var(--blue-soft); border: 1px solid var(--blue-deep); flex-wrap: wrap; gap: 0.5rem; }
+.wake-status.active { background: rgba(74,157,106,0.08); color: var(--success); border-color: rgba(74,157,106,0.3); }
+.wake-status.warn { background: rgba(212,160,23,0.08); color: var(--warn); border-color: rgba(212,160,23,0.3); }
+.wake-status button { background: transparent; border: 1px solid currentColor; color: inherit; padding: 0.3rem 0.7rem; border-radius: var(--radius); font-size: 0.68rem; cursor: pointer; letter-spacing: 0.05em; }
+
+.news-list { max-height: 300px; overflow-y: auto; border: 1px solid var(--border-soft); border-radius: var(--radius); background: var(--night-2); }
+.news-item { padding: 0.7rem 0.9rem; border-bottom: 1px solid var(--border-soft); font-size: 0.8rem; display: flex; gap: 0.6rem; align-items: flex-start; }
+.news-item:last-child { border-bottom: none; }
+.news-item .news-rank { font-family: var(--font-mono); font-size: 0.65rem; color: var(--yellow); font-weight: 700; flex-shrink: 0; min-width: 20px; }
+.news-item .news-title { color: var(--ink); line-height: 1.4; }
+.news-item .news-source { font-size: 0.65rem; color: var(--ink-faint); margin-top: 0.2rem; }
+
+.control-row { margin-bottom: 1rem; }
+.control-label { display: block; font-size: 0.72rem; color: var(--ink-dim); margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.15em; font-weight: 600; }
+select { width: 100%; padding: 0.8rem 0.95rem; border-radius: var(--radius); border: 1px solid var(--border); background: var(--night-2); color: var(--ink); font-family: var(--font-sans); font-size: 0.88rem; -webkit-appearance: none; appearance: none; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path fill='%23e5c15a' d='M0 0l5 6 5-6z'/></svg>"); background-repeat: no-repeat; background-position: right 0.95rem center; background-size: 10px; }
+select:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px rgba(74,123,200,0.12); }
+
+.btn-jt { width: 100%; padding: 1.5rem; border-radius: var(--radius); border: 2px solid var(--yellow-deep); background: linear-gradient(135deg, rgba(232,123,53,0.25) 0%, rgba(229,193,90,0.2) 50%, rgba(139,95,196,0.2) 100%); color: var(--yellow-soft); font-size: 1.1rem; font-weight: 700; letter-spacing: 0.25em; text-transform: uppercase; cursor: pointer; margin-bottom: 1rem; box-shadow: 0 0 30px rgba(229,193,90,0.15), inset 0 0 20px rgba(229,193,90,0.05); position: relative; overflow: hidden; }
+.btn-jt::after { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(229,193,90,0.15), transparent); animation: jtShine 3s linear infinite; }
+@keyframes jtShine { 0% { left: -100%; } 100% { left: 100%; } }
+.btn-jt:disabled { opacity: 0.3; cursor: not-allowed; }
+.btn-jt:disabled::after { display: none; }
+.btn-jt .jt-sub { display: block; font-size: 0.65rem; letter-spacing: 0.15em; color: var(--ink-dim); margin-top: 0.4rem; font-weight: 400; text-transform: none; }
+.btn-stop { width: 100%; padding: 0.9rem; border-radius: var(--radius); border: 1px solid var(--error); background: transparent; color: var(--error); font-size: 0.82rem; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; cursor: pointer; margin-bottom: 1rem; display: none; }
+.btn-stop.visible { display: block; }
+
+.phase-bar { background: var(--panel); border: 1px solid var(--border); border-left: 2px solid var(--purple); border-radius: var(--radius); padding: 0.9rem 1rem; margin-bottom: 1rem; display: none; }
+.phase-bar.visible { display: block; }
+.phase-steps { display: flex; gap: 0.4rem; margin-bottom: 0.7rem; flex-wrap: wrap; }
+.phase-step { flex: 1; min-width: 60px; padding: 0.5rem 0.4rem; border-radius: var(--radius); background: var(--night-2); border: 1px solid var(--border-soft); font-size: 0.55rem; text-transform: uppercase; letter-spacing: 0.06em; text-align: center; color: var(--ink-faint); font-weight: 600; }
+.phase-step.active { color: var(--yellow); border-color: var(--yellow-deep); background: rgba(229,193,90,0.06); }
+.phase-step.done { color: var(--success); border-color: rgba(74,157,106,0.3); background: rgba(74,157,106,0.05); }
+.phase-info { font-size: 0.75rem; font-family: var(--font-mono); color: var(--ink-dim); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.4rem; }
+
+.queue { margin-top: 1.2rem; }
+.queue-summary { background: var(--panel); border: 1px solid var(--border); border-left: 2px solid var(--purple); border-radius: var(--radius); padding: 0.8rem 1rem; margin-bottom: 0.7rem; font-size: 0.78rem; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem; font-family: var(--font-mono); }
+.queue-summary .progress-text { color: var(--yellow); font-weight: 600; }
+.queue-summary .eta-text { color: var(--ink-dim); }
+.queue-item { display: flex; align-items: center; gap: 0.8rem; padding: 0.75rem 0.9rem; border-radius: var(--radius); border: 1px solid var(--border-soft); margin-bottom: 0.4rem; background: var(--panel); font-size: 0.82rem; }
+.queue-item.pending { opacity: 0.45; }
+.queue-item.creating { border-color: var(--warn); background: linear-gradient(90deg, rgba(212,160,23,0.05), var(--panel)); }
+.queue-item.processing { border-color: var(--blue); background: linear-gradient(90deg, rgba(74,123,200,0.06), var(--panel)); }
+.queue-item.done { border-color: var(--success); background: linear-gradient(90deg, rgba(74,157,106,0.05), var(--panel)); }
+.queue-item.failed { border-color: var(--error); background: linear-gradient(90deg, rgba(200,90,74,0.05), var(--panel)); }
+.queue-item .q-icon { font-size: 1rem; width: 1.5rem; text-align: center; flex-shrink: 0; }
+.queue-item .q-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-family: var(--font-serif); }
+.queue-item .q-status { font-size: 0.7rem; color: var(--ink-dim); text-align: right; max-width: 55%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-family: var(--font-mono); }
+
+.jt-panel { display: none; margin-top: 1.5rem; }
+.jt-panel.visible { display: block; }
+.jt-card { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.2rem 1.3rem; margin-bottom: 1rem; }
+.jt-title { font-family: var(--font-serif); font-size: 1.5rem; color: var(--yellow-soft); margin-bottom: 0.4rem; text-align: center; letter-spacing: 0.1em; }
+.jt-meta { font-size: 0.7rem; color: var(--ink-dim); text-align: center; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 1.2rem; font-family: var(--font-mono); }
+.host-tag { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.72rem; padding: 0.35rem 0.8rem; border-radius: 999px; background: rgba(200,176,224,0.1); border: 1px solid var(--purple-deep); color: var(--lavender); margin: 0 auto 1rem; }
+.host-tag strong { color: var(--yellow-soft); font-weight: 600; }
+.seg-block { border-left: 2px solid var(--border); padding-left: 1rem; margin-bottom: 1.2rem; }
+.seg-block.active { border-left-color: var(--yellow); }
+.seg-block.done { border-left-color: var(--success); }
+.seg-num { font-size: 0.62rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink-faint); font-family: var(--font-mono); margin-bottom: 0.3rem; }
+.seg-headline { font-family: var(--font-serif); font-size: 1rem; color: var(--yellow-soft); line-height: 1.35; margin-bottom: 0.4rem; }
+.seg-summary { font-size: 0.78rem; color: var(--ink); background: rgba(229,193,90,0.05); border-left: 2px solid var(--yellow-deep); padding: 0.5rem 0.7rem; border-radius: 2px; margin-bottom: 0.5rem; line-height: 1.5; }
+.seg-cast { font-size: 0.7rem; color: var(--mint); margin-top: 0.3rem; padding: 0.35rem 0.6rem; background: rgba(168,216,200,0.06); border-left: 2px solid var(--mint); border-radius: 2px; }
+.seg-cast strong { color: var(--yellow-soft); }
+.seg-dialogue { font-family: var(--font-serif); font-size: 0.88rem; font-style: italic; color: var(--lavender); line-height: 1.5; padding: 0.35rem 0.6rem; margin: 0.3rem 0; }
+.seg-dialogue .spk { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--yellow-soft); font-style: normal; font-family: var(--font-sans); font-weight: 600; display: block; margin-bottom: 0.15rem; }
+.seg-action { font-size: 0.7rem; color: var(--orange-soft); margin-top: 0.3rem; padding: 0.3rem 0.5rem; background: rgba(232,123,53,0.06); border-left: 2px solid var(--orange-deep); border-radius: 2px; }
+.seg-loc { font-size: 0.7rem; color: var(--mint); margin-top: 0.3rem; }
+
+.gallery { margin-top: 1.8rem; }
+.gallery-title { font-family: var(--font-serif); font-size: 1.1rem; color: var(--ink); margin-bottom: 1rem; letter-spacing: 0.15em; text-transform: uppercase; text-align: center; position: relative; padding-bottom: 0.8rem; }
+.gallery-title::after { content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 60px; height: 1px; background: linear-gradient(90deg, transparent, var(--yellow), transparent); }
+.jt-segment { margin-bottom: 2rem; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; background: var(--panel); }
+.jt-segment-info { padding: 1rem 1.1rem; background: linear-gradient(135deg, rgba(229,193,90,0.06), rgba(139,95,196,0.04)); border-bottom: 1px solid var(--border); }
+.jt-segment-headline { font-family: var(--font-serif); font-size: 1rem; color: var(--yellow-soft); line-height: 1.35; margin-bottom: 0.4rem; }
+.jt-segment-summary { font-size: 0.78rem; color: var(--ink); line-height: 1.5; }
+.jt-segment-videos { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; padding: 0.8rem; }
+@media (max-width: 480px) { .jt-segment-videos { grid-template-columns: 1fr; } }
+.jt-video { border-radius: var(--radius); overflow: hidden; border: 1px solid var(--border); background: #000; }
+.jt-video video { width: 100%; display: block; aspect-ratio: 9/16; object-fit: cover; background: #000; }
+.jt-video .jt-video-label { padding: 0.5rem 0.6rem; background: var(--night-2); font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; font-family: var(--font-mono); display: flex; justify-content: space-between; gap: 0.4rem; }
+.jt-video.host .jt-video-label { color: var(--lavender); }
+.jt-video.reporter .jt-video-label { color: var(--mint); }
+.jt-video .jt-video-label .who { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.jt-video .jt-video-label .loc { color: var(--ink-dim); font-size: 0.6rem; }
+.jt-video-placeholder { display: flex; align-items: center; justify-content: center; aspect-ratio: 9/16; color: var(--ink-faint); font-size: 0.7rem; font-family: var(--font-mono); background: var(--night-2); border: 1px dashed var(--border); }
+
+.images-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 0.6rem; margin-top: 1.2rem; }
+.image-card { border-radius: var(--radius); overflow: hidden; border: 1px solid var(--border); background: var(--night-2); position: relative; aspect-ratio: 9/16; }
+.image-card.loading { display: flex; align-items: center; justify-content: center; color: var(--ink-faint); font-size: 0.65rem; font-family: var(--font-mono); }
+.image-card.loading::after { content: ''; position: absolute; inset: 0; background: linear-gradient(110deg, transparent 30%, rgba(229,193,90,0.08) 50%, transparent 70%); animation: shimmer 1.8s linear infinite; }
+@keyframes shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+.image-card img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.image-card .img-label { position: absolute; bottom: 0; left: 0; right: 0; padding: 0.3rem 0.5rem; background: linear-gradient(transparent, rgba(10,10,18,0.9)); font-size: 0.6rem; font-family: var(--font-mono); color: var(--yellow-soft); letter-spacing: 0.1em; text-transform: uppercase; }
+.image-card.host .img-label { color: var(--lavender); }
+.image-card.reporter .img-label { color: var(--mint); }
+
+.status-bar { position: fixed; bottom: 0; left: 0; right: 0; background: var(--night-3); border-top: 1px solid var(--border); color: var(--ink); padding: 0.85rem 1.1rem; font-size: 0.78rem; display: flex; align-items: center; gap: 0.7rem; transform: translateY(100%); transition: transform 0.35s cubic-bezier(0.2,0.9,0.3,1); z-index: 100; font-family: var(--font-mono); box-shadow: 0 -4px 20px rgba(0,0,0,0.4); }
+.status-bar.visible { transform: translateY(0); }
+.status-bar .spinner { width: 12px; height: 12px; border: 2px solid rgba(229,193,90,0.2); border-top-color: var(--yellow); border-radius: 50%; animation: spin 0.8s linear infinite; flex-shrink: 0; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.hidden { display: none !important; }
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: var(--night-2); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+#noSleepCanvas { position: fixed; top: 0; left: 0; width: 1px; height: 1px; opacity: 0.01; pointer-events: none; z-index: -1; }
+#noSleepVideo { position: fixed; top: 0; left: 0; width: 1px; height: 1px; opacity: 0.01; pointer-events: none; z-index: -1; }
+
+.debug-panel { position: fixed; bottom: 0; left: 0; right: 0; height: 260px; background: #05050a; border-top: 2px solid var(--yellow-deep); z-index: 200; display: flex; flex-direction: column; font-family: var(--font-mono); box-shadow: 0 -8px 32px rgba(0,0,0,0.7); transition: height 0.3s ease; }
+.debug-panel.collapsed { height: 36px; }
+.debug-header { display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0.8rem; background: linear-gradient(90deg, #0f0f18, #1a1a28); border-bottom: 1px solid var(--border); flex-shrink: 0; cursor: pointer; user-select: none; }
+.debug-title { font-size: 0.72rem; color: var(--yellow); letter-spacing: 0.15em; text-transform: uppercase; font-weight: 600; display: flex; align-items: center; gap: 0.5rem; }
+.debug-title .debug-badge { font-size: 0.6rem; padding: 0.1rem 0.4rem; background: var(--yellow); color: var(--night); border-radius: 2px; font-weight: 700; }
+.debug-actions { display: flex; gap: 0.3rem; }
+.debug-actions button { background: transparent; border: 1px solid var(--border); color: var(--ink-dim); font-size: 0.62rem; padding: 0.25rem 0.55rem; border-radius: 2px; cursor: pointer; letter-spacing: 0.05em; }
+.debug-actions button:hover { color: var(--yellow); border-color: var(--yellow-deep); }
+.debug-body { flex: 1; overflow-y: auto; padding: 0.5rem 0.7rem 1rem; font-size: 0.72rem; line-height: 1.45; color: #c8c8d0; }
+.debug-entry { margin-bottom: 0.3rem; padding: 0.25rem 0.4rem; border-left: 2px solid transparent; border-radius: 2px; word-break: break-word; }
+.debug-entry.info { border-left-color: var(--ink-faint); }
+.debug-entry.success { border-left-color: var(--success); background: rgba(74,157,106,0.04); }
+.debug-entry.warn { border-left-color: var(--warn); background: rgba(212,160,23,0.04); }
+.debug-entry.error { border-left-color: var(--error); background: rgba(200,90,74,0.06); color: #f0a0a0; }
+.debug-entry.api { border-left-color: var(--blue); background: rgba(74,123,200,0.04); }
+.debug-entry.response { border-left-color: var(--purple); background: rgba(139,95,196,0.04); }
+.debug-entry.state { border-left-color: var(--orange); background: rgba(232,123,53,0.04); }
+.debug-entry.ai { border-left-color: var(--lavender); background: rgba(200,176,224,0.05); }
+.debug-time { color: var(--ink-faint); margin-right: 0.5rem; font-size: 0.65rem; }
+.debug-cat { color: var(--yellow-soft); font-weight: 600; margin-right: 0.4rem; font-size: 0.65rem; }
+.debug-msg { color: #d8d8e0; }
+.debug-data { margin-top: 0.3rem; padding: 0.4rem 0.5rem; background: #0a0a12; border: 1px solid var(--border-soft); border-radius: 2px; font-size: 0.68rem; color: #a8d8b0; max-height: 180px; overflow: auto; white-space: pre-wrap; word-break: break-all; line-height: 1.4; }
+
+@media (max-width: 480px) {
+h1 { font-size: 1.8rem; }
+.images-grid { grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); }
+.phase-step { font-size: 0.48rem; padding: 0.35rem 0.2rem; }
+body { padding-bottom: 22rem; }
+.debug-panel { height: 220px; }
+}
+</style>
+</head>
+<body>
+
+<header>
+<div class="kata-mark">聞 · NewsReel</div>
+<h1>NewsReel Studio</h1>
+<p class="subtitle">Le JT généré par IA · Chroniqueur plateau + reporters + figurants liés à l'actualité</p>
+</header>
+
+<div class="info-banner">
+<strong>Le JT :</strong> un seul clic. L'IA récupère les <strong class="hl-blue">titres du jour</strong> (Google News RSS),
+choisit les <strong class="hl-yellow">infos majeures</strong>, crée un <strong class="hl-lavender">chroniqueur plateau</strong> récurrent
+et pour chaque info une <strong class="hl-mint">équipe sur place</strong> : un reporter + des <strong>figurants directement liés au sujet</strong>
+(étudiants pour une news étudiante, ouvriers pour une usine, sportifs pour un match, médecins pour la santé…).
+Chaque vidéo est un <strong class="hl-orange">hook ultra-spectaculaire</strong> avec une action incroyable.
+Style Wes Anderson rétro-futuriste pastel photoréaliste 35mm.
+</div>
+
+<div class="api-panel" id="api-panel">
+<input type="password" class="api-key-input" id="api-key-input" placeholder="Collez votre clé API Agnes ici (sk-...)" autocomplete="off" spellcheck="false">
+<button type="button" class="api-save-btn" id="api-save-btn">Enregistrer la clé</button>
+<div class="api-status-line" id="api-status-line"><span class="status-dot"></span><span id="api-status-text">Aucune clé API enregistrée</span></div>
+<div class="api-hint">Clé gratuite sur <a href="https://platform.agnes-ai.com" target="_blank">platform.agnes-ai.com</a> → Settings → API Keys</div>
+<div class="stat-line" id="stat-line"><span>📊 Vitesse vidéo : <span id="stat-speed">en attente</span></span><span id="stat-samples">0 génération</span></div>
+<div class="wake-status" id="wake-status"><span id="wake-status-text">💤 Veille automatique</span><button type="button" id="wake-toggle-btn">Garder l'écran allumé</button></div>
+</div>
+
+<button type="button" class="btn-jt" id="jt-btn" disabled>
+  ▶ Lancer le JT
+  <span class="jt-sub">News → Résumé IA → Scénario multi-personnages → Images → Vidéos hook</span>
+</button>
+<button type="button" class="btn-stop" id="stop-btn">⏹ Arrêter la génération</button>
+
+<div class="phase-bar" id="phase-bar">
+<div class="phase-steps">
+<div class="phase-step" data-phase="text">1 · News</div>
+<div class="phase-step" data-phase="dialogue">2 · Scénario JT</div>
+<div class="phase-step" data-phase="images">3 · Images</div>
+<div class="phase-step" data-phase="videos">4 · Vidéos hook</div>
+<div class="phase-step" data-phase="done">5 · JT prêt</div>
+</div>
+<div class="phase-info"><span id="phase-detail">En attente</span><span id="phase-eta"></span></div>
+</div>
+
+<div class="section" id="section-settings">
+<div class="section-header" data-toggle="section-settings"><span class="section-title">⚙️ Réglages du JT</span><span class="chevron">▼</span></div>
+<div class="section-body"><div class="section-content">
+<div class="control-row">
+<label class="control-label">Nombre d'infos au JT</label>
+<select id="seg-count-select">
+<option value="3">3 infos — JT court</option>
+<option value="5" selected>5 infos — JT standard</option>
+<option value="7">7 infos — JT complet</option>
+</select>
+</div>
+<div class="control-row">
+<label class="control-label">Catégorie des news</label>
+<select id="news-category">
+<option value="WORLD">🌍 International</option>
+<option value="NATION" selected>🇫🇷 France</option>
+<option value="BUSINESS">💼 Économie</option>
+<option value="TECHNOLOGY">💻 Technologie</option>
+<option value="SCIENCE">🔬 Science</option>
+<option value="HEALTH">🏥 Santé</option>
+<option value="SPORTS">⚽ Sport</option>
+<option value="ENTERTAINMENT">🎬 Culture</option>
+</select>
+</div>
+<div class="control-row">
+<label class="control-label">Durée de chaque vidéo hook</label>
+<select id="duration-select">
+<option value="121">5 secondes (121 frames)</option>
+<option value="145" selected>6 secondes (145 frames)</option>
+<option value="169">7 secondes (169 frames)</option>
+</select>
+</div>
+<div class="control-row">
+<label class="control-label">Intensité du mouvement</label>
+<select id="intensity-select">
+<option value="subtle">Subtile — contemplatif</option>
+<option value="moderate">Modérée — élégante</option>
+<option value="strong" selected>Forte — cinématographique</option>
+</select>
+</div>
+</div></div>
+</div>
+
+<div class="section" id="section-news-preview">
+<div class="section-header" data-toggle="section-news-preview"><span class="section-title">📰 Aperçu des news <span class="badge soft">optionnel</span></span><span class="chevron">▼</span></div>
+<div class="section-body"><div class="section-content">
+<div class="news-list" id="news-list">
+<div style="padding:1.2rem;text-align:center;color:var(--ink-faint);font-size:0.8rem;">Cliquez sur « Lancer le JT » pour charger et analyser les news.</div>
+</div>
+<div style="font-size:0.72rem;color:var(--ink-dim);margin-top:0.6rem;" id="news-status">En attente.</div>
+</div></div>
+</div>
+
+<div class="jt-panel" id="jt-panel">
+<div class="jt-card" id="jt-card"></div>
+<span id="raw-scenario-toggle" style="font-size:0.62rem;color:var(--blue-soft);cursor:pointer;margin-top:0.4rem;border-bottom:1px dotted var(--blue-deep);display:inline-block;">▸ Voir la réponse brute du scénario (JSON)</span>
+<pre id="raw-scenario" style="margin-top:0.6rem;padding:0.7rem;background:#05050a;border:1px solid var(--border);border-radius:var(--radius);font-family:var(--font-mono);font-size:0.68rem;color:#a8d8b0;max-height:340px;overflow:auto;white-space:pre-wrap;word-break:break-all;line-height:1.45;display:none;"></pre>
+<div class="images-grid" id="images-grid"></div>
+</div>
+
+<div class="queue" id="queue" style="display:none;"></div>
+
+<div class="gallery" id="gallery" style="display:none;">
+<div class="gallery-title">Le JT — vidéos hook</div>
+<div id="gallery-grid"></div>
+</div>
+
+<div class="section" id="section-medialog" style="margin-top:1.5rem;">
+<div class="section-header" data-toggle="section-medialog"><span class="section-title">🗂️ Journal des médias générés <span class="badge soft" id="medialog-count">0</span></span><span class="chevron">▼</span></div>
+<div class="section-body"><div class="section-content">
+<div class="media-log" id="media-log">
+<div style="font-size:0.72rem;color:var(--ink-dim);font-family:var(--font-mono);">Les URLs des images et vidéos apparaîtront ici au fur et à mesure.</div>
+</div>
+</div></div>
+</div>
+
+<div class="status-bar" id="status-bar"><div class="spinner"></div><span id="status-text">Préparation…</span></div>
+
+<div class="toast" id="toast"><span class="toast-icon" id="toast-icon">✓</span><span id="toast-text">Message</span></div>
+
+<div class="debug-panel" id="debug-panel">
+<div class="debug-header" id="debug-header">
+<div class="debug-title">🖥️ Console de débogage <span class="debug-badge" id="debug-count">0</span></div>
+<div class="debug-actions">
+<button type="button" id="debug-copy-btn">Copier</button>
+<button type="button" id="debug-clear-btn">Effacer</button>
+<button type="button" id="debug-collapse-btn">−</button>
+</div>
+</div>
+<div class="debug-body" id="debug-body"></div>
+</div>
+
+<canvas id="noSleepCanvas" width="2" height="2"></canvas>
+<video id="noSleepVideo" playsinline muted loop></video>
+
+<script>
+const API_BASE = 'https://apihub.agnes-ai.com/v1';
+const POLL_BASE = 'https://apihub.agnes-ai.com/agnesapi';
+const MODEL_TEXT = 'agnes-2.5-flash';
+const MODEL_IMAGE = 'agnes-image-2.1-flash';
+const MODEL_VIDEO = 'agnes-video-v2.0';
+const FRAME_RATE = 24;
+
+const GOOGLE_NEWS_RSS = {
+    WORLD: 'https://news.google.com/rss/headlines/section/topic/WORLD?hl=fr&gl=FR&ceid=FR:fr',
+    NATION: 'https://news.google.com/rss/headlines/section/topic/NATION?hl=fr&gl=FR&ceid=FR:fr',
+    BUSINESS: 'https://news.google.com/rss/headlines/section/topic/BUSINESS?hl=fr&gl=FR&ceid=FR:fr',
+    TECHNOLOGY: 'https://news.google.com/rss/headlines/section/topic/TECHNOLOGY?hl=fr&gl=FR&ceid=FR:fr',
+    SCIENCE: 'https://news.google.com/rss/headlines/section/topic/SCIENCE?hl=fr&gl=FR&ceid=FR:fr',
+    HEALTH: 'https://news.google.com/rss/headlines/section/topic/HEALTH?hl=fr&gl=FR&ceid=FR:fr',
+    SPORTS: 'https://news.google.com/rss/headlines/section/topic/SPORTS?hl=fr&gl=FR&ceid=FR:fr',
+    ENTERTAINMENT: 'https://news.google.com/rss/headlines/section/topic/ENTERTAINMENT?hl=fr&gl=FR&ceid=FR:fr'
+};
+
+async function fetchViaRss2Json(rssUrl) {
+    const apiKey = localStorage.getItem('rss2json_api_key') || '';
+    const keyParam = apiKey ? '&api_key=' + encodeURIComponent(apiKey) : '';
+    const url = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(rssUrl) + keyParam;
+    debugLog('api', 'RSS2JSON', 'Requête : ' + url.slice(0, 120));
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    if (data.status !== 'ok') throw new Error('rss2json status: ' + data.status);
+    return (data.items || []).map((item, i) => ({
+        title: item.title || '', link: item.link || '', pubDate: item.pubDate || '',
+        source: item.author || 'Google News', rank: i + 1
+    }));
+}
+async function fetchViaAllOrigins(rssUrl) {
+    const url = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(rssUrl);
+    debugLog('api', 'ALLORIGINS', 'Requête…');
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    return parseRssXml(await res.text());
+}
+async function fetchViaCodeTabs(rssUrl) {
+    const url = 'https://api.codetabs.com/v1/proxy/?quest=' + encodeURIComponent(rssUrl);
+    debugLog('api', 'CODETABS', 'Requête…');
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    return parseRssXml(await res.text());
+}
+async function fetchViaThingProxy(rssUrl) {
+    const url = 'https://thingproxy.freeboard.io/fetch/' + rssUrl;
+    debugLog('api', 'THINGPROXY', 'Requête…');
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    return parseRssXml(await res.text());
+}
+function parseRssXml(text) {
+    const parser = new DOMParser();
+    const xmlDoc = parser.parseFromString(text, 'text/xml');
+    const items = xmlDoc.querySelectorAll('item');
+    const newsItems = [];
+    items.forEach((item, i) => {
+        if (i >= 25) return;
+        const title = item.querySelector('title')?.textContent || '';
+        const link = item.querySelector('link')?.textContent || '';
+        const pubDate = item.querySelector('pubDate')?.textContent || '';
+        const source = item.querySelector('source')?.textContent || '';
+        if (title) newsItems.push({ title, link, pubDate, source, rank: i + 1 });
+    });
+    return newsItems;
+}
+async function fetchGoogleNewsRSSWithFallback(category) {
+    const rssUrl = GOOGLE_NEWS_RSS[category] || GOOGLE_NEWS_RSS.WORLD;
+    const methods = [
+        { name: 'rss2json', fn: () => fetchViaRss2Json(rssUrl) },
+        { name: 'allorigins', fn: () => fetchViaAllOrigins(rssUrl) },
+        { name: 'codetabs', fn: () => fetchViaCodeTabs(rssUrl) },
+        { name: 'thingproxy', fn: () => fetchViaThingProxy(rssUrl) }
+    ];
+    for (const method of methods) {
+        try {
+            debugLog('info', 'RSS', 'Tentative avec ' + method.name + '…');
+            const items = await method.fn();
+            if (items && items.length > 0) {
+                debugLog('success', 'RSS', method.name + ' → ' + items.length + ' actualités');
+                return { items, method: method.name };
+            }
+        } catch (e) { debugLog('warn', 'RSS', method.name + ' échoué : ' + e.message); }
+    }
+    debugLog('warn', 'RSS', 'Tous les proxys ont échoué — mode démo');
+    return { items: getDemoNews(category), method: 'demo' };
+}
+function getDemoNews(category) {
+    const demoData = {
+        WORLD: ['Un sommet international se tient à Genève pour discuter du climat','Les Nations Unies appellent à un cessez-le-feu','Un nouveau traité commercial signé entre 12 pays','La crise humanitaire s\'aggrave dans la Corne de l\'Afrique','Un séisme de magnitude 7,2 frappe la côte pacifique'],
+        NATION: ['Le gouvernement annonce une réforme des retraites','Une grève nationale paralyse les transports','Le président inaugure un nouveau musée à Paris','Les élections municipales se préparent','Un scandale politique éclate au gouvernement'],
+        BUSINESS: ['La bourse de Paris atteint un niveau record','Une grande entreprise annonce 5 000 licenciements','L\'inflation ralentit pour le troisième mois','Une fusion majeure bouleverse le secteur bancaire','Le prix du pétrole chute de 8%'],
+        TECHNOLOGY: ['Une nouvelle IA bat tous les records','Un géant du numérique condamné','La 6G entre en phase de test','Une cyberattaque paralyse des hôpitaux','Un nouveau smartphone pliable révolutionne le marché'],
+        SCIENCE: ['Une découverte majeure sur l\'origine de l\'univers','Un vaccin contre le cancer entre en phase 3','La NASA annonce une mission vers Mars','Un nouveau dinosaure découvert en Patagonie','Un matériau supraconducteur à température ambiante'],
+        HEALTH: ['Une épidémie de grippe aviaire inquiète l\'OMS','Un traitement contre Alzheimer approuvé','La pollution réduit l\'espérance de vie','Un nouveau variant du Covid détecté','La téléconsultation explose'],
+        SPORTS: ['La France remporte la Coupe du monde de rugby','Un marathonien bat le record du monde','Les JO de 2036 attribués','Un scandale de dopage secoue le cyclisme','Le PSG signe un contrat record'],
+        ENTERTAINMENT: ['Un film français remporte la Palme d\'Or','Une série phénomène bat des records','Un festival attire 500 000 personnes','Un acteur légendaire annonce sa retraite','Un album surprise bat tous les records']
+    };
+    const titles = demoData[category] || demoData.WORLD;
+    return titles.map((title, i) => ({ title, link: '#', pubDate: new Date().toISOString(), source: 'Mode démo', rank: i + 1 }));
+}
+
+let createImageIntervalMs = 4000;
+let createVideoIntervalMs = 75000;
+let imageAttemptsSinceLastError = 0;
+let videoAttemptsSinceLastError = 0;
+let debugCount = 0;
+let debugEntries = [];
+let debugCollapsed = false;
+
+const IMAGE_PARALLEL = 3;
+const IMAGE_INTERVAL_MS = 3400;
+const IMAGE_INTERVAL_MIN = 3200;
+const IMAGE_INTERVAL_MAX = 12000;
+const VIDEO_INTERVAL_MIN = 62000;
+const VIDEO_INTERVAL_MAX = 90000;
+const VIDEO_INTERVAL_SAFE = 75000;
+const VIDEO_FIRST_POLL_DELAY_SEC = 80;
+const VIDEO_POLL_INTERVALS = [8, 8, 12, 12, 20, 20, 25];
+const VIDEO_MAX_POLL_ATTEMPTS = 100;
+const TIMING_CACHE_KEY = 'newsreel_timing_v2';
+const API_KEY_STORAGE = 'agnes_api_key';
+const WAKE_LOCK_PREF = 'agnes_wakelock_enabled';
+const DEBUG_MAX_ENTRIES = 800;
+
+const state = {
+    newsItems: [],
+    newsMethod: '',
+    segCount: 5,
+    durationFrames: 145,
+    intensity: 'strong',
+    isRunning: false,
+    stopRequested: false,
+    jt: null,
+    rawScenarioResponse: '',
+    hostImage: null,
+    sceneImages: {},
+    videos: [],
+    jtStartTime: 0
+};
+
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+function formatEta(seconds) {
+    if (seconds < 60) return Math.round(seconds) + 's';
+    const m = Math.floor(seconds / 60); const s = Math.round(seconds % 60);
+    return m + 'm' + (s > 0 ? ' ' + s + 's' : '');
+}
+function countWords(str) {
+    if (!str) return 0;
+    return String(str).trim().split(/\s+/).filter(Boolean).length;
+}
+
+function debugLog(level, category, message, data) {
+    const body = document.getElementById('debug-body');
+    if (!body) return;
+    const time = new Date().toLocaleTimeString('fr-FR', { hour12: false });
+    const entry = document.createElement('div');
+    entry.className = 'debug-entry ' + level;
+    let html = '<span class="debug-time">' + time + '</span>';
+    html += '<span class="debug-cat">[' + esc(category) + ']</span>';
+    html += '<span class="debug-msg">' + esc(message) + '</span>';
+    if (data !== undefined && data !== null) {
+        let dataStr;
+        if (typeof data === 'string') dataStr = data;
+        else { try { dataStr = JSON.stringify(data, null, 2); } catch (e) { dataStr = String(data); } }
+        if (dataStr.length > 3000) dataStr = dataStr.slice(0, 3000) + '\n…[tronqué]';
+        html += '<pre class="debug-data">' + esc(dataStr) + '</pre>';
+    }
+    entry.innerHTML = html;
+    body.appendChild(entry);
+    debugEntries.push({ time, level, category, message });
+    if (debugEntries.length > DEBUG_MAX_ENTRIES) debugEntries.shift();
+    while (body.children.length > DEBUG_MAX_ENTRIES) body.removeChild(body.firstChild);
+    body.scrollTop = body.scrollHeight;
+    debugCount++;
+    const countEl = document.getElementById('debug-count');
+    if (countEl) countEl.textContent = debugCount;
+}
+function clearDebug() {
+    const body = document.getElementById('debug-body');
+    if (body) body.innerHTML = '';
+    debugEntries = []; debugCount = 0;
+    const countEl = document.getElementById('debug-count');
+    if (countEl) countEl.textContent = '0';
+    debugLog('info', 'SYSTEM', 'Console effacée');
+}
+function copyDebug() {
+    const lines = debugEntries.map(e => e.time + ' [' + e.category + '] ' + e.message).join('\n');
+    const finish = (ok) => { showToast(ok ? 'Console copiée' : 'Copie impossible', ok ? 'success' : 'error'); };
+    try {
+        if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(lines).then(() => finish(true)).catch(() => legacyCopy(lines, finish));
+            return;
+        }
+    } catch (e) {}
+    legacyCopy(lines, finish);
+}
+function legacyCopy(text, cb) {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed'; ta.style.top = '0'; ta.style.left = '0';
+    ta.style.width = '2em'; ta.style.height = '2em'; ta.style.padding = '0';
+    ta.style.border = 'none'; ta.style.outline = 'none'; ta.style.boxShadow = 'none';
+    ta.style.background = 'transparent'; ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.focus(); ta.select(); ta.setSelectionRange(0, text.length);
+    let ok = false;
+    try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
+    document.body.removeChild(ta);
+    cb(ok);
+}
+function toggleDebugCollapse() {
+    const panel = document.getElementById('debug-panel');
+    const btn = document.getElementById('debug-collapse-btn');
+    if (!panel || !btn) return;
+    debugCollapsed = !debugCollapsed;
+    panel.classList.toggle('collapsed', debugCollapsed);
+    btn.textContent = debugCollapsed ? '+' : '−';
+}
+
+let toastTimeout = null;
+function showToast(message, type = 'success', duration = 2500) {
+    const toast = document.getElementById('toast');
+    const icon = document.getElementById('toast-icon');
+    const text = document.getElementById('toast-text');
+    if (!toast || !icon || !text) return;
+    toast.classList.remove('visible', 'success', 'error', 'warn');
+    void toast.offsetWidth;
+    const icons = { success: '✓', error: '✕', warn: '⚠' };
+    icon.textContent = icons[type] || '✓';
+    text.textContent = message;
+    toast.classList.add(type);
+    requestAnimationFrame(() => toast.classList.add('visible'));
+    if (toastTimeout) clearTimeout(toastTimeout);
+    toastTimeout = setTimeout(() => toast.classList.remove('visible'), duration);
+}
+
+let wakeLockSentinel = null;
+let wakeLockEnabled = false;
+let canvasStream = null;
+let canvasInterval = null;
+function isWakeLockSupported() { return 'wakeLock' in navigator && typeof navigator.wakeLock.request === 'function'; }
+async function requestWakeLockAPI() {
+    if (!isWakeLockSupported()) return false;
+    try {
+        wakeLockSentinel = await navigator.wakeLock.request('screen');
+        wakeLockSentinel.addEventListener('release', () => { wakeLockSentinel = null; updateWakeStatus(); });
+        return true;
+    } catch (e) { debugLog('warn', 'WAKELOCK', 'Refusé : ' + e.message); return false; }
+}
+async function releaseWakeLockAPI() { if (wakeLockSentinel) { try { await wakeLockSentinel.release(); } catch (e) {} wakeLockSentinel = null; } }
+function startCanvasStream() {
+    if (canvasStream) return true;
+    try {
+        const canvas = document.getElementById('noSleepCanvas');
+        const video = document.getElementById('noSleepVideo');
+        if (!canvas || !video) return false;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return false;
+        ctx.fillStyle = '#000000'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+        if (typeof canvas.captureStream !== 'function') return false;
+        canvasStream = canvas.captureStream(1);
+        let toggle = false;
+        canvasInterval = setInterval(() => { toggle = !toggle; ctx.fillStyle = toggle ? '#000000' : '#010101'; ctx.fillRect(0, 0, canvas.width, canvas.height); }, 1000);
+        video.srcObject = canvasStream; video.muted = true; video.playsInline = true;
+        const p = video.play(); if (p && p.catch) p.catch(() => {});
+        return true;
+    } catch (e) { debugLog('warn', 'WAKELOCK', 'Canvas fallback échoué : ' + e.message); return false; }
+}
+function stopCanvasStream() {
+    if (canvasInterval) { clearInterval(canvasInterval); canvasInterval = null; }
+    const video = document.getElementById('noSleepVideo');
+    if (video) { try { video.pause(); video.srcObject = null; } catch (e) {} }
+    if (canvasStream) { try { canvasStream.getTracks().forEach(t => t.stop()); } catch (e) {} canvasStream = null; }
+}
+async function activateWakeLock() {
+    let success = false;
+    if (isWakeLockSupported()) success = await requestWakeLockAPI();
+    if (!success) success = startCanvasStream();
+    if (!success && !canvasStream) success = startCanvasStream();
+    return success;
+}
+async function deactivateWakeLock() { await releaseWakeLockAPI(); stopCanvasStream(); }
+function updateWakeStatus() {
+    const el = document.getElementById('wake-status');
+    const txt = document.getElementById('wake-status-text');
+    const btn = document.getElementById('wake-toggle-btn');
+    if (!el || !txt || !btn) return;
+    el.classList.remove('active', 'warn');
+    const canvas = document.getElementById('noSleepCanvas');
+    const has = isWakeLockSupported() || (canvas && canvas.captureStream);
+    if (!has) { el.classList.add('warn'); txt.textContent = '⚠️ Non supporté'; btn.style.display = 'none'; return; }
+    btn.style.display = 'inline-block';
+    const isActive = wakeLockSentinel !== null || canvasStream !== null;
+    if (wakeLockEnabled && isActive) { el.classList.add('active'); txt.textContent = '✅ Écran allumé'; btn.textContent = 'Désactiver'; }
+    else if (wakeLockEnabled && !isActive) { el.classList.add('warn'); txt.textContent = '⏳ En attente'; btn.textContent = 'Désactiver'; }
+    else { txt.textContent = '💤 Veille automatique'; btn.textContent = 'Garder l\'écran allumé'; }
+}
+async function toggleWakeLock() {
+    if (wakeLockEnabled) {
+        wakeLockEnabled = false; await deactivateWakeLock();
+        try { localStorage.setItem(WAKE_LOCK_PREF, '0'); } catch (e) {}
+        showToast('Veille automatique', 'warn'); debugLog('state', 'WAKELOCK', 'Désactivé');
+    } else {
+        wakeLockEnabled = true;
+        const ok = await activateWakeLock();
+        try { localStorage.setItem(WAKE_LOCK_PREF, '1'); } catch (e) {}
+        if (ok) { showToast('Écran allumé', 'success'); debugLog('success', 'WAKELOCK', 'Activé'); }
+        else { showToast('Activez manuellement', 'warn'); debugLog('warn', 'WAKELOCK', 'Non activé'); }
+    }
+    updateWakeStatus();
+}
+document.addEventListener('visibilitychange', async () => {
+    if (document.visibilityState === 'visible' && wakeLockEnabled) { await activateWakeLock(); updateWakeStatus(); }
+});
+async function ensureWakeLockActive() {
+    if (!wakeLockEnabled) return;
+    if (wakeLockSentinel === null && canvasStream === null) { await activateWakeLock(); updateWakeStatus(); }
+}
+
+function loadTimingCache() { try { return JSON.parse(localStorage.getItem(TIMING_CACHE_KEY) || '{}'); } catch (e) { return {}; } }
+function saveTimingCache(c) { try { localStorage.setItem(TIMING_CACHE_KEY, JSON.stringify(c)); } catch (e) {} }
+function recordGenerationTime(key, ms) {
+    const c = loadTimingCache();
+    if (!c[key]) c[key] = [];
+    c[key].push(ms);
+    if (c[key].length > 10) c[key] = c[key].slice(-10);
+    saveTimingCache(c); updateTimingDisplay();
+}
+function estimateGenerationTime(key, fallbackMs) {
+    const c = loadTimingCache();
+    const s = c[key];
+    if (s && s.length > 0) {
+        const sorted = [...s].sort((a, b) => a - b);
+        const mid = Math.floor(sorted.length / 2);
+        return sorted.length % 2 === 0 ? (sorted[mid-1] + sorted[mid]) / 2 : sorted[mid];
+    }
+    return fallbackMs;
+}
+function updateTimingDisplay() {
+    const c = loadTimingCache();
+    const v = c['video'] || [];
+    const s = document.getElementById('stat-speed');
+    const t = document.getElementById('stat-samples');
+    if (!s || !t) return;
+    if (v.length === 0) { s.textContent = 'en attente'; t.textContent = '0 génération'; return; }
+    const avg = v.reduce((a, b) => a + b, 0) / v.length;
+    s.textContent = (avg / 1000).toFixed(1) + ' s en moyenne';
+    t.textContent = v.length + ' génération' + (v.length > 1 ? 's' : '');
+}
+
+function getApiKey() { try { return (localStorage.getItem(API_KEY_STORAGE) || '').trim(); } catch (e) { return ''; } }
+function saveApiKey() {
+    const input = document.getElementById('api-key-input');
+    if (!input) return;
+    const key = input.value.trim();
+    if (!key) {
+        try { localStorage.removeItem(API_KEY_STORAGE); } catch (e) {}
+        updateApiPanel(); showToast('Clé supprimée', 'warn'); return;
+    }
+    if (!key.startsWith('sk-')) { if (!confirm('La clé ne commence pas par "sk-". Sauvegarder ?')) return; }
+    try {
+        localStorage.setItem(API_KEY_STORAGE, key);
+        updateApiPanel(); showToast('Clé enregistrée ✓', 'success');
+        debugLog('success', 'API', 'Clé : ' + key.slice(0, 8) + '…' + key.slice(-4));
+        input.blur();
+    } catch (e) { showToast('Erreur sauvegarde', 'error'); }
+}
+function updateApiPanel() {
+    const panel = document.getElementById('api-panel');
+    const input = document.getElementById('api-key-input');
+    const statusLine = document.getElementById('api-status-line');
+    const statusText = document.getElementById('api-status-text');
+    const key = getApiKey();
+    if (!panel || !input || !statusLine || !statusText) return;
+    if (key) {
+        panel.classList.add('ok'); statusLine.classList.add('ok');
+        statusText.textContent = 'Clé active · ' + key.slice(0, 8) + '…' + key.slice(-4);
+        input.value = key; input.placeholder = '';
+    } else {
+        panel.classList.remove('ok'); statusLine.classList.remove('ok');
+        statusText.textContent = 'Aucune clé API enregistrée';
+        input.value = ''; input.placeholder = 'Collez votre clé API Agnes ici (sk-...)';
+    }
+    updateJTButton();
+}
+function updateJTButton() {
+    const btn = document.getElementById('jt-btn');
+    if (!btn) return;
+    const hasKey = !!getApiKey();
+    btn.disabled = !hasKey || state.isRunning;
+    if (state.isRunning) btn.innerHTML = '⏳ JT en cours…<span class="jt-sub">Ne fermez pas l\'onglet</span>';
+    else if (!hasKey) btn.innerHTML = '🔑 Ajoutez votre clé API<span class="jt-sub">Pour lancer le JT</span>';
+    else btn.innerHTML = '▶ Lancer le JT<span class="jt-sub">' + state.segCount + ' infos · ' + (state.segCount * 2) + ' vidéos hook</span>';
+}
+
+function renderNewsList() {
+    const list = document.getElementById('news-list');
+    if (!list) return;
+    if (state.newsItems.length === 0) {
+        list.innerHTML = '<div style="padding:1.2rem;text-align:center;color:var(--ink-faint);font-size:0.8rem;">Aucune actualité chargée.</div>';
+        return;
+    }
+    list.innerHTML = state.newsItems.slice(0, 15).map((item, i) =>
+        '<div class="news-item"><span class="news-rank">' + item.rank + '.</span>' +
+        '<div><div class="news-title">' + esc(item.title) + '</div>' +
+        '<div class="news-source">' + esc(item.source || '') + '</div></div></div>'
+    ).join('');
+}
+
+async function apiFetch(url, options = {}, label = 'API', kind = 'default') {
+    for (let attempt = 0; attempt < 7; attempt++) {
+        if (state.stopRequested) throw new Error('Arrêt demandé');
+        const method = options.method || 'GET';
+        let bodyPreview = null;
+        if (options.body) {
+            try {
+                const p = JSON.parse(options.body);
+                const c = JSON.parse(JSON.stringify(p));
+                if (c.image && typeof c.image === 'string' && c.image.length > 80) c.image = c.image.slice(0, 80) + '…[b64 ' + c.image.length + ']';
+                if (c.last_frame && typeof c.last_frame === 'string' && c.last_frame.length > 80) c.last_frame = c.last_frame.slice(0, 80) + '…[b64 ' + c.last_frame.length + ']';
+                bodyPreview = c;
+            } catch (e) { bodyPreview = options.body.slice(0, 500); }
+        }
+        debugLog('api', 'REQ ' + label, method + ' ' + url + ' (tentative ' + (attempt + 1) + ')', bodyPreview);
+        try {
+            const t0 = Date.now();
+            const res = await fetch(url, options);
+            const dt = Date.now() - t0;
+            debugLog('response', 'RÉP ' + label, 'HTTP ' + res.status + ' en ' + dt + 'ms');
+            if (res.status === 429) {
+                if (kind === 'image') { imageAttemptsSinceLastError = 0; if (createImageIntervalMs < IMAGE_INTERVAL_MAX) createImageIntervalMs = Math.min(createImageIntervalMs + 1500, IMAGE_INTERVAL_MAX); }
+                else if (kind === 'video') { videoAttemptsSinceLastError = 0; if (createVideoIntervalMs < VIDEO_INTERVAL_MAX) createVideoIntervalMs = Math.min(createVideoIntervalMs + 8000, VIDEO_INTERVAL_MAX); }
+                const wait = [10, 20, 35, 50, 75, 100, 150][Math.min(attempt, 6)];
+                debugLog('warn', 'RATELIMIT', '429 — attente ' + wait + 's');
+                setStatus('L\'IA se prépare… (' + wait + 's)');
+                await sleep(wait * 1000); continue;
+            }
+            if (res.status === 503) {
+                const wait = [5, 10, 15, 20, 30, 45][Math.min(attempt, 5)];
+                debugLog('warn', 'SERVICE', '503 — attente ' + wait + 's');
+                setStatus('Le service se prépare… (' + wait + 's)');
+                await sleep(wait * 1000); continue;
+            }
+            if (res.ok) {
+                if (kind === 'image') { imageAttemptsSinceLastError++; if (imageAttemptsSinceLastError >= 5 && createImageIntervalMs > IMAGE_INTERVAL_MIN) { createImageIntervalMs = Math.max(createImageIntervalMs - 200, IMAGE_INTERVAL_MIN); imageAttemptsSinceLastError = 0; } }
+                else if (kind === 'video') { videoAttemptsSinceLastError++; if (videoAttemptsSinceLastError >= 3 && createVideoIntervalMs > VIDEO_INTERVAL_MIN) { createVideoIntervalMs = Math.max(createVideoIntervalMs - 4000, VIDEO_INTERVAL_MIN); videoAttemptsSinceLastError = 0; } }
+            }
+            return res;
+        } catch (e) {
+            if (e.message === 'Arrêt demandé') throw e;
+            const wait = [3, 5, 8, 12, 20, 30][Math.min(attempt, 5)];
+            debugLog('warn', 'NETWORK', e.message + ' — retry ' + wait + 's');
+            setStatus('Connexion… (' + wait + 's)');
+            await sleep(wait * 1000);
+        }
+    }
+    debugLog('error', 'API', 'Tentatives épuisées pour ' + label);
+    return fetch(url, options);
+}
+
+function escapeControlCharsInStrings(text) {
+    let result = ''; let inString = false; let escape = false;
+    for (let i = 0; i < text.length; i++) {
+        const ch = text[i];
+        if (escape) { result += ch; escape = false; continue; }
+        if (ch === '\\') { result += ch; escape = true; continue; }
+        if (ch === '"') { inString = !inString; result += ch; continue; }
+        if (inString) {
+            if (ch === '\n') { result += '\\n'; continue; }
+            if (ch === '\r') { result += '\\r'; continue; }
+            if (ch === '\t') { result += '\\t'; continue; }
+            const code = ch.charCodeAt(0);
+            if (code < 32) { result += '\\u' + code.toString(16).padStart(4, '0'); continue; }
+        }
+        result += ch;
+    }
+    return result;
+}
+function balanceJson(text) {
+    let openBraces = 0, openBrackets = 0, inString = false, escape = false;
+    for (let i = 0; i < text.length; i++) {
+        const ch = text[i];
+        if (escape) { escape = false; continue; }
+        if (ch === '\\') { escape = true; continue; }
+        if (ch === '"') { inString = !inString; continue; }
+        if (inString) continue;
+        if (ch === '{') openBraces++;
+        else if (ch === '}') openBraces--;
+        else if (ch === '[') openBrackets++;
+        else if (ch === ']') openBrackets--;
+    }
+    let result = text;
+    if (inString) result += '"';
+    while (openBrackets > 0) { result += ']'; openBrackets--; }
+    while (openBraces > 0) { result += '}'; openBraces--; }
+    return result;
+}
+function salvageScenario(text) {
+    const titleMatch = text.match(/"jt_title"\s*:\s*"((?:[^"\\]|\\.)*)"/) || text.match(/"title"\s*:\s*"((?:[^"\\]|\\.)*)"/);
+    const hostMatch = text.match(/"host"\s*:\s*\{[\s\S]*?"name"\s*:\s*"((?:[^"\\]|\\.)*)"[\s\S]*?"description"\s*:\s*"((?:[^"\\]|\\.)*)"[\s\S]*?"plateau"\s*:\s*"((?:[^"\\]|\\.)*)"[\s\S]*?"host_action"\s*:\s*"((?:[^"\\]|\\.)*)"/);
+    const host = hostMatch ? { name: hostMatch[1], description: hostMatch[2], plateau: hostMatch[3], host_action: hostMatch[4] } : null;
+    const segments = [];
+    const segRegex = /"segment_number"\s*:\s*(\d+)[\s\S]*?"headline"\s*:\s*"((?:[^"\\]|\\.)*)"[\s\S]*?"summary"\s*:\s*"((?:[^"\\]|\\.)*)"[\s\S]*?"host_dialogue"\s*:\s*"((?:[^"\\]|\\.)*)"[\s\S]*?"host_action"\s*:\s*"((?:[^"\\]|\\.)*)"[\s\S]*?"people"\s*:\s*\[([\s\S]*?)\]\s*,[\s\S]*?"location"\s*:\s*"((?:[^"\\]|\\.)*)"[\s\S]*?"scene_action"\s*:\s*"((?:[^"\\]|\\.)*)"[\s\S]*?"reporter"\s*:\s*\{[\s\S]*?"name"\s*:\s*"((?:[^"\\]|\\.)*)"[\s\S]*?"description"\s*:\s*"((?:[^"\\]|\\.)*)"[\s\S]*?"dialogue"\s*:\s*"((?:[^"\\]|\\.)*)"/g;
+    let m;
+    while ((m = segRegex.exec(text)) !== null) {
+        const peopleBlock = m[6];
+        const people = [];
+        const pRegex = /\{[^{}]*?"name"\s*:\s*"((?:[^"\\]|\\.)*)"[^{}]*?"description"\s*:\s*"((?:[^"\\]|\\.)*)"[^{}]*?"role"\s*:\s*"((?:[^"\\]|\\.)*)"[^{}]*?\}/g;
+        let pm;
+        while ((pm = pRegex.exec(peopleBlock)) !== null) {
+            people.push({ name: pm[1], description: pm[2], role: pm[3] });
+        }
+        segments.push({
+            segment_number: parseInt(m[1], 10),
+            headline: m[2].replace(/\\n/g, ' ').replace(/\\"/g, '"'),
+            summary: m[3].replace(/\\n/g, ' ').replace(/\\"/g, '"'),
+            host_dialogue: m[4].replace(/\\n/g, ' ').replace(/\\"/g, '"'),
+            host_action: m[5].replace(/\\n/g, ' ').replace(/\\"/g, '"'),
+            people: people,
+            location: m[7].replace(/\\n/g, ' ').replace(/\\"/g, '"'),
+            scene_action: m[8].replace(/\\n/g, ' ').replace(/\\"/g, '"'),
+            reporter: {
+                name: m[9].replace(/\\"/g, '"'),
+                description: m[10].replace(/\\n/g, ' ').replace(/\\"/g, '"'),
+                dialogue: m[11].replace(/\\n/g, ' ').replace(/\\"/g, '"')
+            },
+            emotion: 'spectaculaire'
+        });
+    }
+    if (segments.length === 0) return null;
+    return { jt_title: titleMatch ? titleMatch[1] : 'Le JT de NewsReel', host, segments };
+}
+function extractJson(text) {
+    if (!text) return null;
+    let c = text.trim();
+    const fm = c.match(/```(?:json)?\s*([\s\S]*?)```/);
+    if (fm) c = fm[1].trim();
+    const fb = c.indexOf('{');
+    if (fb < 0) { debugLog('error', 'PARSE', 'Aucun { trouvé'); return null; }
+    c = c.slice(fb);
+    try { const r = JSON.parse(c); debugLog('success', 'PARSE', 'Stratégie 1 OK'); return r; } catch (e1) { debugLog('warn', 'PARSE', 'S1 échouée'); }
+    try { const r = JSON.parse(escapeControlCharsInStrings(c)); debugLog('success', 'PARSE', 'Stratégie 2 OK'); return r; } catch (e2) { debugLog('warn', 'PARSE', 'S2 échouée'); }
+    try { const lb = c.lastIndexOf('}'); if (lb > 0) { const r = JSON.parse(escapeControlCharsInStrings(c.slice(0, lb + 1))); debugLog('success', 'PARSE', 'Stratégie 3 OK'); return r; } } catch (e3) { debugLog('warn', 'PARSE', 'S3 échouée'); }
+    try { const r = JSON.parse(balanceJson(escapeControlCharsInStrings(c))); debugLog('success', 'PARSE', 'Stratégie 4 OK'); return r; } catch (e4) { debugLog('warn', 'PARSE', 'S4 échouée'); }
+    try { const s = salvageScenario(c); if (s && s.segments && s.segments.length > 0) { debugLog('success', 'PARSE', 'Stratégie 5 (regex) — ' + s.segments.length + ' segments'); return s; } } catch (e5) { debugLog('error', 'PARSE', 'S5 échouée'); }
+    debugLog('error', 'PARSE', 'Aucune stratégie n\'a fonctionné');
+    return null;
+}
+
+function buildJTScenarioPrompt(newsItems, segCount) {
+    const newsList = newsItems.slice(0, 20).map((n, i) => (i + 1) + '. ' + n.title).join('\n');
+    return [
+        'You are a TV news producer creating a spectacular short news program (JT — Journal Télévisé) based on TODAY\'S NEWS.',
+        '',
+        'Select the ' + segCount + ' most important news items and build a news program with:',
+        '- ONE host on the studio set (plateau) — SAME character in ALL host segments.',
+        '- For EACH news item: a full CAST on location, made of a REPORTER plus a GROUP OF 2-4 SECONDARY CHARACTERS DIRECTLY RELATED TO THE NEWS TOPIC.',
+        '',
+        'NEWS LIST (Google News, today):',
+        newsList,
+        '',
+        'ABSOLUTE RULE — INFORMATION MUST BE EXACT:',
+        '- "headline": copy the EXACT title from the news list, verbatim.',
+        '- "summary": the EXACT key facts (numbers, names, dates, places). Do not invent.',
+        '',
+        'ABSOLUTE RULE — CAST PEOPLE RELATED TO THE NEWS:',
+        '- For EACH segment, you MUST create 2 to 4 secondary characters whose ROLE and OUTFIT match the news topic.',
+        '- Examples:',
+        '  * News about students → "people": students (with books, backpacks, school uniforms).',
+        '  * News about a factory closing → "people": factory workers (overalls, helmets, tools).',
+        '  * News about a sports victory → "people": athletes (jerseys, medals, trophies).',
+        '  * News about a health crisis → "people": nurses and doctors (scrubs, stethoscopes, masks).',
+        '  * News about parliament → "people": politicians (rosettes, suits, folders).',
+        '  * News about a rocket launch → "people": engineers and astronauts (helmets, suits, clipboards).',
+        '- Each of these people has a UNIQUE retro-futuristic pastel absurd outfit consistent with their role.',
+        '- These people MUST be visible in the reporter video, doing spectacular synchronized actions.',
+        '',
+        'DIALOGUE CALIBRATION (video is 5-7 seconds at natural pace):',
+        '- host_dialogue: 8 to 14 words. A punchy full sentence introducing the topic.',
+        '- reporter.dialogue: 10 to 18 words. A complete sentence stating the EXACT info with one key fact.',
+        '- Natural French, spoken TV delivery. Full sentences, no filler.',
+        '',
+        'HOOK ACTION (CRITICAL — every video is a SPECTACULAR HOOK):',
+        '- The action must be OVER-THE-TOP, PHYSICAL, ABSURD, JAW-DROPPING and directly tied to the news topic.',
+        '- Multiple characters must be involved SIMULTANEOUSLY in the action.',
+        '- Examples of the LEVEL of action required:',
+        '  * Students news → 30 students in chrome pastel uniforms riding hoverboards while flipping textbooks that explode into confetti, one student juggling three glowing globes, another leaping through a giant pink hoop.',
+        '  * Factory news → workers on a chrome conveyor being flipped upside-down while pastel robots hand them giant candy-colored wrenches, sparks shaped like hearts spraying everywhere.',
+        '  * Sports news → athletes performing backflips on rotating chrome podiums while sequins rain down and a giant trophy breathes pink smoke.',
+        '  * Space news → an astronaut in a bubble helmet riding a chrome rocket that hovers off the ground, engineers throwing pastel clipboards in a perfect arc, smoke rings shot out of a cannon.',
+        '  * Political news → politicians sliding down a giant chrome escalator while waving folders that transform into doves, a red carpet unrolling itself, giant stamp descending.',
+        '- The action is CONTINUOUS and VISIBLE throughout the shot.',
+        '- The camera stays centered and symmetrical, but the scene is CHAOS in motion.',
+        '',
+        'VISUAL STYLE — WES ANDERSON x RETRO-FUTURISM, PHOTOREALISTIC 35MM:',
+        '- Cinematic 35mm film look. Perfect bilateral symmetry, centered frontal composition, planimetric staging.',
+        '- RETRO-FUTURISTIC 1970s SPACE-AGE aesthetic: chrome, curved plastic, raygun shapes, bubble helmets, hover platforms, giant circular portholes.',
+        '- WILD PASTEL PALETTE: candy pink, mint green, butter yellow, lavender, sky blue, coral, cream.',
+        '- ABSURD, FUNNY, SHOW-STOPPING outfits: bell-bottom chrome suits, giant bow ties, plastic bubble helmets, capes, glittering sequins, oversized collars, velvet jumpsuits, raygun holsters, rocket boots.',
+        '- Sets are HALLUCINOGENIC, MAXIMALIST, SYMMETRICAL: neon arches, candy-colored control rooms, giant circular windows, revolving floors, escalators, chrome columns, patterned wallpaper, floating mobiles.',
+        '- PHOTOREALISTIC 35mm film. NO 3D render, NO illustration, NO cartoon, NO anime.',
+        '',
+        'CRITICAL JSON RULES:',
+        '- All strings on a SINGLE LINE. Never use real line breaks inside a string.',
+        '- Escape any double quote as \\". No trailing commas. No markdown.',
+        '',
+        'OUTPUT FORMAT (exact schema, return ONLY this JSON):',
+        '{',
+        '  "jt_title": "Le JT de NewsReel — [theme]",',
+        '  "host": {',
+        '    "name": "...",',
+        '    "description": "extremely detailed retro-futuristic outfit + physical description",',
+        '    "plateau": "extremely detailed hallucinogenic pastel studio description",',
+        '    "host_action": "the incredible spectacular action happening in every host video"',
+        '  },',
+        '  "segments": [',
+        '    {',
+        '      "segment_number": 1,',
+        '      "headline": "EXACT headline from the news list",',
+        '      "summary": "EXACT facts (numbers, names, dates, places)",',
+        '      "host_dialogue": "8 to 14 words in French",',
+        '      "host_action": "specific spectacular action for THIS host video",',
+        '      "people": [',
+        '        {"name": "...", "description": "extremely detailed outfit + physique matching the role", "role": "students | workers | athletes | nurses | politicians | engineers | etc."},',
+        '        {"name": "...", "description": "...", "role": "..."},',
+        '        {"name": "...", "description": "...", "role": "..."}',
+        '      ],',
+        '      "location": "detailed hallucinogenic pastel retro-futuristic location tied to the news",',
+        '      "scene_action": "the incredible spectacular continuous action happening in this location, involving the reporter AND all the people, matching the news topic",',
+        '      "reporter": {',
+        '        "name": "...",',
+        '        "description": "unique absurd retro-futuristic outfit + physical description",',
+        '        "dialogue": "10 to 18 words in French stating the EXACT info"',
+        '      },',
+        '      "emotion": "one word"',
+        '    }',
+        '    ... exactly ' + segCount + ' segments ...',
+        '  ]',
+        '}',
+        '',
+        'REMEMBER:',
+        '- Each segment has 2-4 secondary people RELATED TO THE NEWS.',
+        '- The action is SPECTACULAR, CONTINUOUS, INVOLVING ALL CHARACTERS SIMULTANEOUSLY.',
+        '- Everything is retro-futuristic pastel photorealistic 35mm.'
+    ].join('\n');
+}
+
+async function generateJTScenario(newsItems, segCount) {
+    setPhase('text', '🧠 Analyse des actualités…', '');
+    setStatus('L\'IA analyse les titres du jour…');
+    const prompt = buildJTScenarioPrompt(newsItems, segCount);
+    debugLog('ai', 'PROMPT JT', 'Prompt envoyé', prompt.slice(0, 2500));
+    const body = {
+        model: MODEL_TEXT,
+        messages: [
+            { role: 'system', content: 'You are a TV news producer and visual director. You ALWAYS return valid JSON exactly matching the requested schema. All string values are on single lines. No markdown, no commentary. You create retro-futuristic pastel Wes-Anderson-style news programs with SPECTACULAR HOOK ACTIONS and MULTIPLE CHARACTERS tied to the news. Every segment includes 2-4 secondary characters whose role matches the news topic. DIALOGUE: host 8-14 words, reporter 10-18 words. NEVER 3D, NEVER illustration. Always photorealistic 35mm cinema.' },
+            { role: 'user', content: prompt }
+        ],
+        temperature: 0.9,
+        max_tokens: 8000,
+        response_format: { type: 'json_object' }
+    };
+    const res = await apiFetch(API_BASE + '/chat/completions', {
+        method: 'POST',
+        headers: { 'Authorization': 'Bearer ' + getApiKey(), 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+    }, 'Scénario JT', 'text');
+    if (!res.ok) { const err = await res.text(); debugLog('error', 'JT', 'HTTP ' + res.status, err.slice(0, 2000)); throw new Error('HTTP ' + res.status); }
+    const data = await res.json();
+    debugLog('response', 'RAW JT', 'Réponse brute', data);
+    const content = data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
+    state.rawScenarioResponse = content || '';
+    const rawEl = document.getElementById('raw-scenario');
+    if (rawEl) rawEl.textContent = content || '(vide)';
+    const jt = extractJson(content);
+    if (!jt || !jt.segments || !Array.isArray(jt.segments) || jt.segments.length === 0) throw new Error('Scénario JT invalide');
+    if (!jt.host) jt.host = { name: 'Chroniqueur', description: 'silver-haired anchor, chrome jumpsuit, oversized round glasses, orange bow tie, rocket boots', plateau: 'pastel retro-futuristic TV studio, symmetrical, chrome desk, giant circular portholes, candy stripes', host_action: 'the host presses a giant chrome button and the entire studio rotates while confetti explodes and chrome robots roll out holding giant pastel letters' };
+    if (!jt.host.host_action) jt.host.host_action = 'the host turns a giant chrome crank and the studio walls split open to reveal a candy-colored cityscape while a brass band of chrome robots plays';
+    if (jt.segments.length < segCount) {
+        const last = jt.segments[jt.segments.length - 1];
+        while (jt.segments.length < segCount) {
+            jt.segments.push(JSON.parse(JSON.stringify(last)));
+            jt.segments[jt.segments.length - 1].segment_number = jt.segments.length;
+        }
+    }
+    if (jt.segments.length > segCount) jt.segments = jt.segments.slice(0, segCount);
+    jt.segments.forEach((s, i) => {
+        if (!s.emotion) s.emotion = 'spectaculaire';
+        s.segment_number = i + 1;
+        if (!s.reporter) s.reporter = { name: 'Reporter', description: 'bubble helmet, cape, chrome jumpsuit, giant sequin bow tie', dialogue: '' };
+        if (!s.host_action) s.host_action = jt.host.host_action;
+        if (!s.scene_action) s.scene_action = 'the reporter and the people on set perform an incredible synchronized choreography while pastel smoke fills the frame';
+        if (!s.people || !Array.isArray(s.people) || s.people.length === 0) {
+            s.people = [
+                { name: 'Figurant 1', description: 'retro-futuristic pastel outfit matching the news, playful expression', role: 'witness' },
+                { name: 'Figurant 2', description: 'retro-futuristic pastel outfit matching the news, playful expression', role: 'witness' },
+                { name: 'Figurant 3', description: 'retro-futuristic pastel outfit matching the news, playful expression', role: 'witness' }
+            ];
+        }
+        if (!s.location) s.location = 'pastel retro-futuristic hallucinogenic set, symmetrical, chrome arches, candy colors';
+        let hw = countWords(s.host_dialogue);
+        if (hw > 18) s.host_dialogue = s.host_dialogue.trim().split(/\s+/).slice(0, 14).join(' ');
+        if (hw > 0 && hw < 6) s.host_dialogue = s.host_dialogue + ' aujourd\'hui en direct.';
+        let rw = countWords(s.reporter.dialogue);
+        if (rw > 22) s.reporter.dialogue = s.reporter.dialogue.trim().split(/\s+/).slice(0, 18).join(' ');
+        if (rw > 0 && rw < 8) s.reporter.dialogue = s.reporter.dialogue + ' selon nos informations sur place.';
+    });
+    debugLog('success', 'JT', jt.segments.length + ' segments créés');
+    return jt;
+}
+
+async function generateImage(prompt) {
+    const body = { model: MODEL_IMAGE, prompt: prompt, n: 1, size: '1024x1792', response_format: 'url' };
+    const res = await apiFetch(API_BASE + '/images/generations', {
+        method: 'POST',
+        headers: { 'Authorization': 'Bearer ' + getApiKey(), 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+    }, 'Image', 'image');
+    if (!res.ok) { const err = await res.text(); debugLog('error', 'IMAGE', 'HTTP ' + res.status, err.slice(0, 500)); throw new Error('HTTP ' + res.status); }
+    const data = await res.json();
+    const item = data.data && data.data[0];
+    if (!item) throw new Error('Pas de donnée image');
+    if (item.url) return item.url;
+    if (item.b64_json) return 'data:image/png;base64,' + item.b64_json;
+    throw new Error('Format image inconnu');
+}
+
+async function generateVideo(firstFrame, lastFrame, prompt) {
+    const body = { model: MODEL_VIDEO, prompt: prompt, image: firstFrame, last_frame: lastFrame, num_frames: state.durationFrames, frame_rate: FRAME_RATE };
+    debugLog('ai', 'PROMPT VIDÉO', 'Envoyé', prompt.slice(0, 500) + '…');
+    const res = await apiFetch(API_BASE + '/videos', {
+        method: 'POST',
+        headers: { 'Authorization': 'Bearer ' + getApiKey(), 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+    }, 'Vidéo', 'video');
+    if (!res.ok) { const err = await res.text(); debugLog('error', 'VIDÉO', 'HTTP ' + res.status, err.slice(0, 500)); throw new Error('HTTP ' + res.status); }
+    const data = await res.json();
+    const videoId = data.video_id || data.id || data.task_id;
+    if (!videoId) throw new Error('Pas de video_id');
+    return videoId;
+}
+
+async function pollVideo(videoId, onProgress) {
+    const estimatedMs = estimateGenerationTime('video', 30000 + state.durationFrames * 500);
+    const estimatedSec = estimatedMs / 1000;
+    const minWait = Math.min(VIDEO_FIRST_POLL_DELAY_SEC, Math.max(60, Math.floor(estimatedSec * 0.75)));
+    let remaining = minWait;
+    debugLog('info', 'POLLING', 'Attente initiale ' + remaining + 's');
+    while (remaining > 0) {
+        if (state.stopRequested) throw new Error('Arrêt demandé');
+        onProgress('Préparation — ' + remaining + 's');
+        await sleep(1000); remaining--;
+    }
+    for (let attempt = 0; attempt < VIDEO_MAX_POLL_ATTEMPTS; attempt++) {
+        if (state.stopRequested) throw new Error('Arrêt demandé');
+        if (attempt > 0) {
+            const idx = Math.min(attempt - 1, VIDEO_POLL_INTERVALS.length - 1);
+            let r = VIDEO_POLL_INTERVALS[idx];
+            while (r > 0) { if (state.stopRequested) throw new Error('Arrêt demandé'); onProgress('L\'image prend vie… — ' + r + 's'); await sleep(1000); r--; }
+        }
+        const url = POLL_BASE + '?video_id=' + encodeURIComponent(videoId) + '&model_name=' + encodeURIComponent(MODEL_VIDEO);
+        const res = await apiFetch(url, { method: 'GET', headers: { 'Authorization': 'Bearer ' + getApiKey() } }, 'Polling', 'video');
+        const d = await res.json();
+        const status = d.status || 'unknown';
+        const progress = d.progress || 0;
+        onProgress('Création — ' + progress + '%');
+        debugLog('response', 'POLL #' + (attempt + 1), 'Statut : ' + status + ' (' + progress + '%)');
+        if (status === 'completed' || status === 'succeeded' || status === 'done') {
+            const videoUrl = (d.metadata && d.metadata.url) || d.url || (d.output && d.output.url);
+            if (!videoUrl) throw new Error('Terminé mais pas d\'URL');
+            debugLog('success', 'POLLING', 'Terminé après ' + (attempt + 1) + ' polls');
+            return videoUrl;
+        }
+        if (status === 'failed' || status === 'error' || status === 'cancelled') throw new Error('Échec (' + status + ')');
+    }
+    throw new Error('Délai maximal dépassé');
+}
+
+function buildHostImagePrompt(host) {
+    return [
+        'WES ANDERSON x RETRO-FUTURISM — PHOTOREALISTIC 35MM FILM STILL, ABSURD AND COLORFUL.',
+        'Perfect bilateral symmetry, centered frontal composition, planimetric staging.',
+        'Candy pastel palette: bubblegum pink, mint green, butter yellow, lavender, cream, sky blue, coral.',
+        '35mm anamorphic lens, shallow depth of field, soft even lighting, subtle film grain.',
+        'THIS IS A REAL 35MM FILM SHOT. NO 3D, NO illustration, NO cartoon, NO anime.',
+        '',
+        'CHARACTER (the host, IDENTICAL in all host shots): ' + host.name + ' — ' + host.description,
+        'The outfit is EXTRAVAGANT, RETRO-FUTURISTIC, HILARIOUS — chrome, sequins, giant bow tie, plastic bubble helmet, cape, velvet, raygun holster, rocket boots.',
+        '',
+        'SET (the plateau, IDENTICAL in all host shots): ' + host.plateau,
+        'The set is HALLUCINOGENIC: maximalist, symmetrical, neon arches, giant circular portholes, candy stripes, chrome columns, revolving floor, floating mobiles.',
+        '',
+        'The host is seated at a perfectly centered desk, looking directly at the camera, calm and professional. Perfectly symmetrical pastel retro-futuristic backdrop.',
+        'Format: portrait 9:16 vertical, cinematic photography, 35mm film grain.',
+        'No text, no watermark, no logo, no subtitle.',
+        'CRITICAL: Photorealistic 35mm film. NOT 3D. NOT illustration. NOT cartoon.'
+    ].join('\n');
+}
+function buildReporterImagePrompt(seg) {
+    const r = seg.reporter;
+    const peopleList = (seg.people || []).map(p => p.name + ' (' + p.role + '): ' + p.description).join(' | ');
+    return [
+        'WES ANDERSON x RETRO-FUTURISM — PHOTOREALISTIC 35MM FILM STILL, ABSURD AND COLORFUL.',
+        'Perfect bilateral symmetry, centered frontal composition, planimetric staging.',
+        'Candy pastel palette: bubblegum pink, mint green, butter yellow, lavender, cream, sky blue, coral.',
+        '35mm anamorphic lens, shallow depth of field, soft even lighting, subtle film grain.',
+        'THIS IS A REAL 35MM FILM SHOT. NO 3D, NO illustration, NO cartoon, NO anime.',
+        '',
+        'MAIN CHARACTER (reporter, UNIQUE to this segment): ' + r.name + ' — ' + r.description,
+        'The reporter outfit is EXTRAVAGANT, RETRO-FUTURISTIC, HILARIOUS.',
+        '',
+        'SECONDARY CHARACTERS present in the frame, all RELATED TO THE NEWS TOPIC: ' + peopleList,
+        'Each secondary character wears a UNIQUE absurd retro-futuristic pastel outfit matching their role.',
+        'They are posed mid-action around the reporter, forming a perfectly symmetrical group composition.',
+        '',
+        'LOCATION (UNIQUE to this segment): ' + seg.location,
+        'The location is HALLUCINOGENIC: maximalist, symmetrical, neon, candy-colored, chrome, retro-futuristic.',
+        '',
+        'The reporter stands centered in the frame, facing the camera, holding a retro-futuristic chrome microphone, surrounded by the secondary characters. The location is perfectly symmetrical, pastel, maximalist, Wes-Anderson-styled.',
+        'Format: portrait 9:16 vertical, cinematic photography, 35mm film grain.',
+        'No text, no watermark, no logo, no subtitle.',
+        'CRITICAL: Photorealistic 35mm film. NOT 3D. NOT illustration. NOT cartoon.'
+    ].join('\n');
+}
+
+function buildHostVideoPrompt(jt, seg, index) {
+    const line = (seg.host_dialogue || '').replace(/"/g, '\\"');
+    const action = seg.host_action || jt.host.host_action || '';
+    return [
+        'SPECTACULAR TV NEWS HOOK — ' + Math.round(state.durationFrames / FRAME_RATE) + '-SECOND ATTENTION GRABBER, MAXIMUM ACTION.',
+        'Wes Anderson x retro-futuristic photorealistic 35mm film, absurd, colorful, cinematic.',
+        '',
+        'CHARACTER (host, IDENTICAL to reference): ' + jt.host.name + ' — ' + jt.host.description,
+        'SET: ' + jt.host.plateau,
+        '',
+        'INCREDIBLE HOOK ACTION — SPECTACULAR, PHYSICAL, ABSURD, NON-STOP:',
+        action,
+        'The action is fully visible throughout the entire shot, CHAOS IN MOTION while keeping perfect symmetry. Every second of the clip shows something incredible happening: objects flying, characters leaping, chrome machinery spinning, pastel smoke and confetti bursting, things transforming.',
+        '',
+        'CAMERA: One continuous shot, no cuts. Perfect bilateral symmetry, centered. Slow dolly-in OR static locked-off symmetrical frame. The camera stays perpendicular at all times.',
+        '',
+        'STYLE: Candy pastel palette, chrome and plastic retro-futurism, 35mm film grain, soft even lighting. Photorealistic. NO 3D, NO illustration.',
+        '',
+        'AUDIO (8-14 words, natural TV pace): The host speaks ONE short line in French with calm, professional delivery: "' + line + '"',
+        'Lips move in sync with the words. Then silence and the spectacular action continues to play out until the end.',
+        'No music, no soundtrack. Only retro-futuristic studio ambience and mechanical sounds (whirs, clicks, whooshes).',
+        '',
+        'This is the HOST HOOK for segment ' + (index + 1) + '.',
+        'No text, no subtitles, no watermarks, no on-screen graphics.'
+    ].join('\n');
+}
+function buildReporterVideoPrompt(jt, seg, index) {
+    const r = seg.reporter;
+    const line = (r.dialogue || '').replace(/"/g, '\\"');
+    const action = seg.scene_action || '';
+    const peopleDesc = (seg.people || []).map(p => p.name + ' (' + p.role + ') — ' + p.description).join(' || ');
+    return [
+        'SPECTACULAR TV NEWS HOOK — ' + Math.round(state.durationFrames / FRAME_RATE) + '-SECOND ATTENTION GRABBER, MAXIMUM ACTION.',
+        'Wes Anderson x retro-futuristic photorealistic 35mm film, absurd, colorful, cinematic.',
+        '',
+        'MAIN CHARACTER (reporter, IDENTICAL to reference): ' + r.name + ' — ' + r.description,
+        '',
+        'SECONDARY CHARACTERS (all present on screen, all related to the news topic, all doing actions):',
+        peopleDesc,
+        'Each secondary character has a UNIQUE absurd retro-futuristic pastel outfit.',
+        '',
+        'LOCATION: ' + seg.location,
+        '',
+        'INCREDIBLE HOOK ACTION — SPECTACULAR, PHYSICAL, ABSURD, NON-STOP, INVOLVING EVERYONE:',
+        action,
+        'The action is fully visible throughout the entire shot, CHAOS IN MOTION while keeping perfect symmetry. Every second of the clip shows something incredible happening: characters leaping, riding hover platforms, flipping, dancing in synchronized choreography, juggling glowing objects, chrome props spinning, candy smoke bursting, confetti raining, geometric shapes transforming.',
+        'ALL characters (reporter + all secondary characters) are ACTIVE simultaneously. Nobody is static.',
+        '',
+        'CAMERA: One continuous shot, no cuts. Perfect bilateral symmetry, centered. Static locked-off symmetrical frame OR slow dolly-in. The camera stays perpendicular at all times.',
+        '',
+        'STYLE: Candy pastel palette, chrome and plastic retro-futurism, 35mm film grain, soft even lighting. Photorealistic. NO 3D, NO illustration.',
+        '',
+        'AUDIO (10-18 words, natural TV pace): The reporter speaks ONE short line in French, engaged and on-location, stating the EXACT information: "' + line + '"',
+        'Lips move in sync. Then silence and the spectacular action continues to play out until the end.',
+        'No music, no soundtrack. Only ambient location sounds (wind, crowd, chrome hum, mechanical whooshes, distant horns).',
+        '',
+        'This is the REPORTER HOOK for segment ' + (index + 1) + '.',
+        'No text, no subtitles, no watermarks, no on-screen graphics.'
+    ].join('\n');
+}
+
+function createRateLimitedQueue(maxConcurrent, minIntervalMs) {
+    let running = 0; let lastStart = 0; const queue = []; let resolveIdle = null;
+    function tryNext() {
+        if (running >= maxConcurrent) return;
+        if (queue.length === 0) { if (running === 0 && resolveIdle) { resolveIdle(); resolveIdle = null; } return; }
+        const now = Date.now();
+        const wait = Math.max(0, lastStart + minIntervalMs - now);
+        if (wait > 0) { setTimeout(tryNext, wait); return; }
+        const task = queue.shift();
+        running++; lastStart = Date.now();
+        task().finally(() => { running--; setTimeout(tryNext, 0); });
+    }
+    return {
+        add(fn) { return new Promise((resolve, reject) => { queue.push(() => fn().then(resolve, reject)); setTimeout(tryNext, 0); }); },
+        idle() { return new Promise(r => { if (running === 0 && queue.length === 0) return r(); resolveIdle = r; }); }
+    };
+}
+
+function setStatus(text) {
+    const bar = document.getElementById('status-bar');
+    const txt = document.getElementById('status-text');
+    if (!bar || !txt) return;
+    if (text) { bar.classList.add('visible'); txt.textContent = text; }
+    else bar.classList.remove('visible');
+}
+function setPhase(phase, detail, eta) {
+    const bar = document.getElementById('phase-bar');
+    if (bar) bar.classList.add('visible');
+    document.querySelectorAll('.phase-step').forEach(el => {
+        el.classList.remove('active', 'done');
+        const order = ['text', 'dialogue', 'images', 'videos', 'done'];
+        const curIdx = order.indexOf(phase);
+        const elIdx = order.indexOf(el.dataset.phase);
+        if (elIdx < curIdx) el.classList.add('done');
+        else if (elIdx === curIdx) el.classList.add('active');
+    });
+    const d = document.getElementById('phase-detail');
+    const e = document.getElementById('phase-eta');
+    if (d) d.innerHTML = detail || '';
+    if (e) e.textContent = eta || '';
+}
+
+function renderJT() {
+    const panel = document.getElementById('jt-panel');
+    const card = document.getElementById('jt-card');
+    if (!panel || !card || !state.jt) return;
+    const jt = state.jt;
+    let html = '';
+    html += '<div class="jt-title">' + esc(jt.jt_title || 'Le JT de NewsReel') + '</div>';
+    html += '<div class="jt-meta">' + jt.segments.length + ' sujets · Chroniqueur + reporters + figurants liés à l\'actualité</div>';
+    html += '<div style="text-align:center;margin-bottom:1rem;"><span class="host-tag">🎙️ <strong>' + esc(jt.host.name) + '</strong> — ' + esc((jt.host.description || '').slice(0, 90)) + '</span></div>';
+    jt.segments.forEach((s, i) => {
+        html += '<div class="seg-block" data-seg="' + i + '">';
+        html += '<div class="seg-num">Sujet ' + (i + 1) + ' / ' + jt.segments.length + ' — ' + esc(s.emotion || '') + '</div>';
+        html += '<div class="seg-headline">' + esc(s.headline) + '</div>';
+        html += '<div class="seg-summary">' + esc(s.summary) + '</div>';
+        if (s.host_dialogue) html += '<div class="seg-dialogue"><span class="spk">🎙️ ' + esc(jt.host.name) + ' (plateau)</span>« ' + esc(s.host_dialogue) + ' »</div>';
+        if (s.host_action) html += '<div class="seg-action">🎬 Plateau hook : ' + esc(s.host_action.slice(0, 180)) + (s.host_action.length > 180 ? '…' : '') + '</div>';
+        if (s.people && s.people.length > 0) {
+            html += '<div class="seg-cast">👥 Casting sur place : ';
+            html += s.people.map(p => '<strong>' + esc(p.name) + '</strong> (' + esc(p.role) + ')').join(' · ');
+            html += '</div>';
+        }
+        if (s.reporter) {
+            html += '<div class="seg-dialogue"><span class="spk">📍 ' + esc(s.reporter.name) + ' (sur place)</span>« ' + esc(s.reporter.dialogue) + ' »</div>';
+            if (s.scene_action) html += '<div class="seg-action">🎬 Reporter hook : ' + esc(s.scene_action.slice(0, 200)) + (s.scene_action.length > 200 ? '…' : '') + '</div>';
+            html += '<div class="seg-loc">📍 ' + esc((s.location || '').slice(0, 160)) + '</div>';
+        }
+        html += '</div>';
+    });
+    card.innerHTML = html;
+    panel.classList.add('visible');
+}
+
+function renderImagesGrid() {
+    const grid = document.getElementById('images-grid');
+    if (!grid || !state.jt) return;
+    let html = '';
+    if (state.hostImage) html += '<div class="image-card host"><img src="' + state.hostImage + '" alt=""><div class="img-label">🎙️ Plateau</div></div>';
+    else html += '<div class="image-card loading host">Plateau…</div>';
+    state.jt.segments.forEach((s, i) => {
+        const img = state.sceneImages['reporter-' + i];
+        if (img && img.url) html += '<div class="image-card reporter"><img src="' + img.url + '" alt=""><div class="img-label">📍 ' + esc(s.reporter.name) + '</div></div>';
+        else html += '<div class="image-card loading reporter">Reporter ' + (i + 1) + '…</div>';
+    });
+    grid.innerHTML = html;
+}
+function updateHostImageCard(url) {
+    const el = document.querySelector('.image-card.host');
+    if (!el) return;
+    el.classList.remove('loading');
+    el.innerHTML = '<img src="' + url + '" alt=""><div class="img-label">🎙️ Plateau</div>';
+}
+function updateReporterImageCard(index, url, name) {
+    const cards = document.querySelectorAll('.image-card.reporter');
+    const el = cards[index];
+    if (!el) return;
+    el.classList.remove('loading');
+    el.innerHTML = '<img src="' + url + '" alt=""><div class="img-label">📍 ' + esc(name) + '</div>';
+}
+
+function renderQueue() {
+    const queueEl = document.getElementById('queue');
+    if (!queueEl) return;
+    if (!state.videos.length) { queueEl.style.display = 'none'; return; }
+    const total = state.videos.length;
+    const done = state.videos.filter(v => v.status === 'done').length;
+    const failed = state.videos.filter(v => v.status === 'failed').length;
+    const inProg = state.videos.filter(v => v.status === 'processing' || v.status === 'creating').length;
+    const pending = total - done - failed - inProg;
+    const est = estimateGenerationTime('video', 30000 + state.durationFrames * 500) / 1000;
+    const eta = pending > 0 ? (pending * (createVideoIntervalMs / 1000)) + est : 0;
+    let html = '<div class="queue-summary"><span class="progress-text">VIDÉOS : ' + done + '/' + total + '</span>';
+    if (failed > 0) html += '<span style="color:var(--error);">' + failed + ' échec' + (failed > 1 ? 's' : '') + '</span>';
+    html += '<span class="eta-text">' + (done + failed < total ? '≈ ' + formatEta(eta) + ' restant' : 'Terminé') + '</span></div>';
+    html += state.videos.map(item => {
+        let icon = '○', statusText = 'En file', cls = 'pending';
+        if (item.status === 'creating') { icon = '◐'; statusText = 'Préparation…'; cls = 'creating'; }
+        else if (item.status === 'processing') { icon = '◐'; statusText = item.progress || 'En cours…'; cls = 'processing'; }
+        else if (item.status === 'done') { icon = '●'; statusText = 'Terminé'; cls = 'done'; }
+        else if (item.status === 'failed') { icon = '✕'; statusText = 'Échec'; cls = 'failed'; }
+        return '<div class="queue-item ' + cls + '"><div class="q-icon">' + icon + '</div><div class="q-name">' + esc(item.label) + '</div><div class="q-status">' + esc(statusText) + '</div></div>';
+    }).join('');
+    queueEl.innerHTML = html;
+    queueEl.style.display = 'block';
+}
+function markSeg(segIndex, status) {
+    const el = document.querySelector('.seg-block[data-seg="' + segIndex + '"]');
+    if (!el) return;
+    el.classList.remove('active', 'done');
+    if (status) el.classList.add(status);
+}
+
+function ensureJTGallerySkeleton() {
+    const galleryEl = document.getElementById('gallery');
+    const grid = document.getElementById('gallery-grid');
+    if (!galleryEl || !grid || !state.jt) return;
+    if (grid.dataset.built === '1') return;
+    grid.innerHTML = '';
+    state.jt.segments.forEach((s, i) => {
+        const seg = document.createElement('div');
+        seg.className = 'jt-segment';
+        seg.dataset.seg = i;
+        const castLine = (s.people || []).map(p => p.name + ' (' + p.role + ')').join(' · ');
+        seg.innerHTML =
+            '<div class="jt-segment-info">' +
+                '<div class="jt-segment-headline">📰 ' + esc(s.headline) + '</div>' +
+                '<div class="jt-segment-summary">' + esc(s.summary) + '</div>' +
+                (castLine ? '<div class="seg-cast">👥 ' + esc(castLine) + '</div>' : '') +
+            '</div>' +
+            '<div class="jt-segment-videos">' +
+                '<div class="jt-video host" data-video="host-' + i + '">' +
+                    '<div class="jt-video-placeholder">🎙️ Plateau — en attente…</div>' +
+                    '<div class="jt-video-label"><span class="who">🎙️ ' + esc(state.jt.host.name) + '</span><span class="loc">Plateau</span></div>' +
+                '</div>' +
+                '<div class="jt-video reporter" data-video="reporter-' + i + '">' +
+                    '<div class="jt-video-placeholder">📍 Sur place — en attente…</div>' +
+                    '<div class="jt-video-label"><span class="who">📍 ' + esc(s.reporter.name) + '</span><span class="loc">' + esc((s.location || '').slice(0, 40)) + '</span></div>' +
+                '</div>' +
+            '</div>';
+        grid.appendChild(seg);
+    });
+    grid.dataset.built = '1';
+    galleryEl.style.display = 'block';
+}
+function setJTVideo(videoKey, url) {
+    const el = document.querySelector('.jt-video[data-video="' + videoKey + '"]');
+    if (!el) return;
+    const placeholder = el.querySelector('.jt-video-placeholder');
+    if (placeholder) placeholder.remove();
+    const existing = el.querySelector('video');
+    if (existing) existing.remove();
+    const v = document.createElement('video');
+    v.controls = true; v.preload = 'metadata'; v.playsInline = true;
+    v.src = url;
+    el.insertBefore(v, el.firstChild);
+}
+
+function addMediaLogEntry(kind, url) {
+    const log = document.getElementById('media-log');
+    if (!log) return;
+    const empty = log.querySelector('div[style]');
+    if (empty) empty.remove();
+    const time = new Date().toLocaleTimeString('fr-FR', { hour12: false });
+    const el = document.createElement('div');
+    el.className = 'media-log-entry';
+    const displayUrl = url.length > 120 ? url.slice(0, 120) + '…' : url;
+    el.innerHTML = '<span style="font-size:0.58rem;padding:0.15rem 0.4rem;border-radius:2px;text-transform:uppercase;font-weight:700;background:' + (kind === 'image' ? 'rgba(232,123,53,0.15)' : 'rgba(139,95,196,0.15)') + ';color:' + (kind === 'image' ? 'var(--orange-soft)' : 'var(--purple-soft)') + ';">' + kind + '</span>' +
+        '<span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--blue-soft);font-size:0.66rem;"><a href="' + esc(url) + '" target="_blank" rel="noopener" style="color:var(--blue-soft);text-decoration:none;">' + esc(displayUrl) + '</a></span>' +
+        '<span style="color:var(--ink-faint);font-size:0.62rem;">' + time + '</span>';
+    log.appendChild(el);
+    const countEl = document.getElementById('medialog-count');
+    if (countEl) countEl.textContent = String(log.querySelectorAll('.media-log-entry').length);
+}
+
+async function startJT() {
+    if (state.isRunning) return;
+    if (!getApiKey()) { showToast('Ajoutez votre clé API', 'error'); document.getElementById('api-key-input').focus(); return; }
+
+    state.isRunning = true;
+    state.stopRequested = false;
+    state.jt = null;
+    state.rawScenarioResponse = '';
+    state.hostImage = null;
+    state.sceneImages = {};
+    state.videos = [];
+
+    document.getElementById('jt-card').innerHTML = '';
+    document.getElementById('jt-panel').classList.remove('visible');
+    document.getElementById('images-grid').innerHTML = '';
+    document.getElementById('queue').innerHTML = '';
+    document.getElementById('queue').style.display = 'none';
+    document.getElementById('raw-scenario').textContent = '';
+    document.getElementById('media-log').innerHTML = '<div style="font-size:0.72rem;color:var(--ink-dim);font-family:var(--font-mono);">Les URLs apparaîtront ici.</div>';
+    document.getElementById('medialog-count').textContent = '0';
+    document.getElementById('gallery-grid').innerHTML = '';
+    document.getElementById('gallery-grid').dataset.built = '0';
+    document.getElementById('gallery').style.display = 'none';
+    document.getElementById('stop-btn').classList.add('visible');
+    document.getElementById('jt-btn').disabled = true;
+    document.getElementById('phase-bar').classList.add('visible');
+
+    await ensureWakeLockActive();
+    const totalStart = Date.now();
+
+    debugLog('state', 'START', '════════════════════════════════════════');
+    debugLog('state', 'START', 'DÉMARRAGE DU JT');
+    debugLog('state', 'CONFIG', 'Sujets : ' + state.segCount);
+    debugLog('state', 'CONFIG', 'Frames : ' + state.durationFrames + ' (≈ ' + (state.durationFrames / FRAME_RATE).toFixed(2) + 's)');
+
+    try {
+        setPhase('text', '📡 Récupération des actualités…', '');
+        setStatus('Chargement des Google News…');
+        const category = document.getElementById('news-category').value;
+        const newsResult = await fetchGoogleNewsRSSWithFallback(category);
+        state.newsItems = newsResult.items;
+        state.newsMethod = newsResult.method;
+        renderNewsList();
+        document.getElementById('news-status').textContent = newsResult.items.length + ' actualités chargées (' + (newsResult.method === 'demo' ? 'mode démo' : 'via ' + newsResult.method) + ').';
+        debugLog('success', 'NEWS', newsResult.items.length + ' items via ' + newsResult.method);
+
+        setPhase('text', '🧠 Analyse IA — sélection des ' + state.segCount + ' infos…', '');
+        const jt = await generateJTScenario(state.newsItems, state.segCount);
+        state.jt = jt;
+        state.segCount = jt.segments.length;
+        renderJT();
+        ensureJTGallerySkeleton();
+        renderImagesGrid();
+        state.videos = [];
+        jt.segments.forEach((s, i) => {
+            state.videos.push({ key: 'host-' + i, label: '🎙️ Plateau — sujet ' + (i + 1), status: 'pending', progress: null, videoId: null, videoUrl: null, startTime: null });
+            state.videos.push({ key: 'reporter-' + i, label: '📍 ' + s.reporter.name + ' + casting — sujet ' + (i + 1), status: 'pending', progress: null, videoId: null, videoUrl: null, startTime: null });
+        });
+        renderQueue();
+
+        setPhase('images', '🎨 Création du chroniqueur plateau…', '');
+        setStatus('Création de l\'image du plateau…');
+        const hostPrompt = buildHostImagePrompt(jt.host);
+        try {
+            const hostUrl = await generateImage(hostPrompt);
+            state.hostImage = hostUrl;
+            updateHostImageCard(hostUrl);
+            addMediaLogEntry('image', hostUrl);
+            debugLog('success', 'HOST', 'Image plateau OK');
+        } catch (e) { debugLog('warn', 'HOST', 'Échec : ' + e.message); }
+
+        setPhase('images', '🎨 Création des ' + state.segCount + ' équipes sur place…', '');
+        const imageQueue = createRateLimitedQueue(IMAGE_PARALLEL, IMAGE_INTERVAL_MS);
+        const reporterTasks = [];
+        for (let i = 0; i < jt.segments.length; i++) {
+            const idx = i;
+            const seg = jt.segments[idx];
+            const prompt = buildReporterImagePrompt(seg);
+            reporterTasks.push(imageQueue.add(async () => {
+                if (state.stopRequested) return;
+                try {
+                    const url = await generateImage(prompt);
+                    state.sceneImages['reporter-' + idx] = { url, name: seg.reporter.name };
+                    updateReporterImageCard(idx, url, seg.reporter.name);
+                    addMediaLogEntry('image', url);
+                    debugLog('success', 'REPORTER ' + (idx + 1), 'OK');
+                } catch (e) {
+                    if (e.message === 'Arrêt demandé') return;
+                    debugLog('error', 'REPORTER ' + (idx + 1), e.message);
+                }
+            }));
+        }
+        await Promise.allSettled(reporterTasks);
+        await imageQueue.idle();
+
+        setPhase('videos', '🎬 Génération des ' + state.videos.length + ' vidéos hook…', '');
+        createVideoIntervalMs = VIDEO_INTERVAL_SAFE;
+        videoAttemptsSinceLastError = 0;
+
+        const pollingTasks = [];
+        for (let i = 0; i < state.videos.length; i++) {
+            if (state.stopRequested) break;
+            const item = state.videos[i];
+            const isHost = item.key.startsWith('host-');
+            const segIdx = parseInt(item.key.split('-')[1], 10);
+            const seg = jt.segments[segIdx];
+
+            const imageUrl = isHost ? state.hostImage : (state.sceneImages['reporter-' + segIdx] && state.sceneImages['reporter-' + segIdx].url);
+            if (!imageUrl) {
+                item.status = 'failed'; item.progress = 'Image manquante';
+                renderQueue(); continue;
+            }
+
+            item.status = 'creating'; item.progress = 'Préparation…';
+            renderQueue(); markSeg(segIdx, 'active');
+            setPhase('videos', '🎬 ' + (isHost ? 'Plateau' : 'Reporter') + ' — sujet ' + (segIdx + 1) + ' / ' + jt.segments.length, '≈ ' + formatEta((state.videos.length - i) * (createVideoIntervalMs / 1000 + 90)) + ' restant');
+
+            try {
+                const prompt = isHost ? buildHostVideoPrompt(jt, seg, segIdx) : buildReporterVideoPrompt(jt, seg, segIdx);
+                const videoId = await generateVideo(imageUrl, imageUrl, prompt);
+                item.videoId = videoId; item.startTime = Date.now();
+                item.status = 'processing'; item.progress = 'En cours…';
+                renderQueue();
+                debugLog('success', item.key, 'Tâche : ' + videoId);
+
+                pollingTasks.push((async () => {
+                    try {
+                        const videoUrl = await pollVideo(videoId, (prog) => { item.progress = prog; renderQueue(); });
+                        const elapsed = Date.now() - item.startTime;
+                        recordGenerationTime('video', elapsed);
+                        item.status = 'done'; item.videoUrl = videoUrl; item.progress = 'Terminé';
+                        renderQueue();
+                        setJTVideo(item.key, videoUrl);
+                        addMediaLogEntry('video', videoUrl);
+                        if (!isHost) markSeg(segIdx, 'done');
+                        debugLog('success', item.key, 'Terminé en ' + (elapsed / 1000).toFixed(1) + 's');
+                    } catch (e) {
+                        if (e.message === 'Arrêt demandé') { item.status = 'failed'; item.progress = 'Arrêté'; }
+                        else { item.status = 'failed'; item.progress = 'Échec'; debugLog('error', item.key, e.message); }
+                        renderQueue();
+                    }
+                })());
+            } catch (e) {
+                if (e.message === 'Arrêt demandé') break;
+                item.status = 'failed'; item.progress = 'Échec';
+                renderQueue(); debugLog('error', item.key, e.message);
+            }
+
+            if (i < state.videos.length - 1 && !state.stopRequested) {
+                let waitSec = Math.ceil(createVideoIntervalMs / 1000);
+                for (let r = waitSec; r > 0; r--) {
+                    if (state.stopRequested) break;
+                    setPhase('videos', '🌬️ Respiration — prochaine vidéo dans ' + r + 's', '≈ ' + formatEta((state.videos.length - i - 1) * (createVideoIntervalMs / 1000 + 90)) + ' restant');
+                    await sleep(1000);
+                }
+            }
+        }
+
+        if (pollingTasks.length > 0) {
+            setPhase('videos', '🎞️ Finalisation…', '');
+            await Promise.allSettled(pollingTasks);
+        }
+
+        setPhase('done', '✦ JT terminé ✦', '');
+
+    } catch (e) {
+        debugLog('error', 'GLOBAL', e.message);
+    }
+
+    const totalElapsed = (Date.now() - totalStart) / 1000;
+    const doneV = state.videos.filter(v => v.status === 'done').length;
+    const totalV = state.videos.length;
+    const summary = state.stopRequested ? 'Arrêté — ' + doneV + '/' + totalV + ' vidéos' : '✦ JT prêt — ' + doneV + '/' + totalV + ' vidéos en ' + formatEta(totalElapsed) + ' ✦';
+    debugLog('state', 'FIN', summary);
+    debugLog('state', 'FIN', '════════════════════════════════════════');
+    setStatus(summary);
+    await sleep(4500);
+    setStatus(null);
+
+    state.isRunning = false; state.stopRequested = false;
+    document.getElementById('stop-btn').classList.remove('visible');
+    updateJTButton();
+
+    if (doneV > 0) showToast(doneV + ' vidéo' + (doneV > 1 ? 's' : '') + ' générée' + (doneV > 1 ? 's' : ''), 'success', 4000);
+    else showToast('Aucune vidéo générée', 'error', 3500);
+
+    await deactivateWakeLock();
+}
+
+(function init() {
+    const saveBtn = document.getElementById('api-save-btn');
+    if (saveBtn) saveBtn.addEventListener('click', saveApiKey);
+    const apiInput = document.getElementById('api-key-input');
+    if (apiInput) apiInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); saveApiKey(); } });
+
+    const stopBtn = document.getElementById('stop-btn');
+    if (stopBtn) stopBtn.addEventListener('click', () => { state.stopRequested = true; debugLog('warn', 'STOP', 'Arrêt demandé'); setStatus('Arrêt en cours…'); });
+
+    document.querySelectorAll('[data-toggle]').forEach(header => {
+        header.addEventListener('click', () => { document.getElementById(header.dataset.toggle).classList.toggle('open'); });
+    });
+
+    const segSelect = document.getElementById('seg-count-select');
+    if (segSelect) segSelect.addEventListener('change', e => { state.segCount = parseInt(e.target.value, 10); updateJTButton(); });
+    const durationSelect = document.getElementById('duration-select');
+    if (durationSelect) durationSelect.addEventListener('change', e => { state.durationFrames = parseInt(e.target.value, 10); updateJTButton(); });
+    const intensitySelect = document.getElementById('intensity-select');
+    if (intensitySelect) intensitySelect.addEventListener('change', e => { state.intensity = e.target.value; });
+
+    const jtBtn = document.getElementById('jt-btn');
+    if (jtBtn) jtBtn.addEventListener('click', startJT);
+
+    const wakeBtn = document.getElementById('wake-toggle-btn');
+    if (wakeBtn) wakeBtn.addEventListener('click', toggleWakeLock);
+
+    const debugHeader = document.getElementById('debug-header');
+    if (debugHeader) debugHeader.addEventListener('click', (e) => { if (e.target.tagName === 'BUTTON') return; toggleDebugCollapse(); });
+    const debugCollapseBtn = document.getElementById('debug-collapse-btn');
+    if (debugCollapseBtn) debugCollapseBtn.addEventListener('click', (e) => { e.stopPropagation(); toggleDebugCollapse(); });
+    const debugClearBtn = document.getElementById('debug-clear-btn');
+    if (debugClearBtn) debugClearBtn.addEventListener('click', (e) => { e.stopPropagation(); clearDebug(); });
+    const debugCopyBtn = document.getElementById('debug-copy-btn');
+    if (debugCopyBtn) debugCopyBtn.addEventListener('click', (e) => { e.stopPropagation(); copyDebug(); });
+
+    const rawToggle = document.getElementById('raw-scenario-toggle');
+    if (rawToggle) {
+        rawToggle.addEventListener('click', () => {
+            const el = document.getElementById('raw-scenario');
+            if (!el) return;
+            el.style.display = el.style.display === 'none' ? 'block' : 'none';
+            rawToggle.textContent = el.style.display === 'none' ? '▸ Voir la réponse brute du scénario (JSON)' : '▾ Masquer';
+        });
+    }
+
+    try { const saved = localStorage.getItem(WAKE_LOCK_PREF); wakeLockEnabled = saved === '1'; } catch (e) {}
+    if (wakeLockEnabled) activateWakeLock().then(() => updateWakeStatus());
+
+    updateApiPanel();
+    updateTimingDisplay();
+    updateWakeStatus();
+    renderNewsList();
+
+    const savedKey = getApiKey();
+    if (savedKey) document.getElementById('api-key-input').value = savedKey;
+
+    debugLog('success', 'INIT', 'NewsReel Studio — Le JT prêt');
+    debugLog('info', 'INIT', 'Pipeline : NEWS RSS → ANALYSE IA → SCÉNARIO JT (multi-personnages) → IMAGES → VIDÉOS HOOK');
+    debugLog('info', 'INIT', 'RSS : rss2json + allorigins + codetabs + thingproxy');
+    debugLog('info', 'INIT', 'Modèles : ' + MODEL_TEXT + ' / ' + MODEL_IMAGE + ' / ' + MODEL_VIDEO);
+    debugLog('info', 'INIT', 'Style : rétro-futuriste pastel, tenues absurdes, décors hallucinogènes, 35mm photoréaliste');
+    debugLog('info', 'INIT', 'Vidéos HOOK : action spectaculaire impliquant TOUS les personnages liés à l\'actualité');
+    debugLog('info', 'INIT', 'Casting : chroniqueur plateau récurrent + reporter + 2-4 figurants liés au sujet');
+})();
+</script>
+</body>
+</html>
